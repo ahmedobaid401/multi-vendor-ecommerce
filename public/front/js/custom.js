@@ -2,6 +2,9 @@
 
 $(document).ready(function(){
 
+
+
+
 $("#sort").on("change",function(){
      //this.form.submit();
       
@@ -65,15 +68,109 @@ $("#sort").on("change",function(){
  
       });
 
+ 
+// get price for a size attribute
+$("#get_price").change(function(){
+  var product_id=$(this).attr('product_id');
+  var size = $(this).val();
+  var color=$(".color-ajax").text();
+  //alert(color);
+   
+  $.ajax({
+      url:"get_price_attribute",
+      type:"post", 
+      data:{size:size,color:color,product_id:product_id ,_token:csrf,},
+      
+      success:function(response){
+        
+        if(response['discount_price']>0){
+          //alert(response['pattribute_price']);
+        $(".price-after-discount").html('<span class="price"> $'+response['discount_price']+'</span>    ');
+        $(".price-before-discount").html("$"+ response["attribute_price"] );
+
+                    
+        }else{
+        $(".price-orginal").html("$"+ response['attribute_price'] );
+
+        }  
+        
+        if(response['stock']<1){
+          $(".in-stock-ajax").text("   not available");
+        }else{
+          $(".in-stock-ajax").text( response['stock']);
+
+        }
+        
+      },// end success
+
+      error:function(error){
+        alert(error);
+      }// end error
+
+  });// end ajax
+  
+  
+  
+  
+  });// end get price attribute
 
 
+  
+// get color in product page
+$(".color-photo").on("click",function(){
+  var color=$(this).attr("color");
+  var product_id=$("#get_price").attr("product_id");
+  var size=$("#get_price").val();
+// alert(product_id);
+ $(".color-ajax").text(color);
 
+$.ajax({
+  type:"post",
+  url:"get_color_product",
+  data:{color:color, size:size ,product_id:product_id,_token:csrf},
+  
+  success:function(response){
+   // alert(response);
+    if(response <1){
+      $(".in-stock-ajax").text("   not available");
+      
+    }else{
+
+      $(".in-stock-ajax").text( response);
+    } 
+           
+  },
+  error:function(error){
+   alert(error);
+  }
+
+});
+
+//alert(color);
 
 
 });
+
+
+
+
+
+
+
+
+});// document 
+
+
+
+
+
+
+
+
+
    
-     
-  
+  ///   ///    //// ////// //// ///// /// //// ///  //// ///   
+  // get filter
 function get_filter(){
   var filter=[];
   
@@ -94,7 +191,7 @@ function get_data(class_name){
   });
 
   return arr;
-}
+}// end get_data
 
 
 

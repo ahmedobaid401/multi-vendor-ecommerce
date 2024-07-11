@@ -46,15 +46,17 @@
                           <div class="mb-3">
                            <input type="text" name="size[]"  style="width:110px;" placeholder="size" required/>
                            <input type="text" name="sku[]"   style="width:110px;" placeholder="sku"required/>
+                           
                            <input type="text" name="price[]" style="width: 110px;" placeholder="price"required/>
                            <input type="text" name="stock[]" style="width:110px;" placeholder="stock"required/>
+                           
                             <a href="javascript:void(0);" class="add_button" title="Add Attribute"> Add</a>
                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary m-3" style="width:120px;" >Submit</button>                                                                                                                                        
                   </form>
         
-
+                
                   <form method="post" action="{{url('admin/edit-attribute/'.$product['id'])}}">
                                       
                    @csrf
@@ -65,8 +67,10 @@
                                                       
                               <th>Id</th>
                               <th>size</th>
-                              <th>sku </th>                                                             
+                              <th>sku </th>  
+                                                                                      
                               <th>price </th>                          
+                                                      
                               <th>stock  </th>  
                               <th>action </th>                
                                                                                                                                                                                                                                                       
@@ -90,6 +94,7 @@
                               <td>
                               {{$attribute['sku']}} 
                                 </td>
+                                
                               <td>
                               <input type="number" name="price[]" value="{{$attribute['price']}}" style="width:90px;" placeholder="price" required/>
                               </td>
@@ -112,10 +117,12 @@
                                     <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
                                   </svg>                                                             
                                   </a>                   
-                                 @endif   
+                                 @endif  
+                                 <div>
                                  <a href=" ">  
                                       edit not ready                                                                
-                                  </a>                         
+                                  </a> 
+                                 <a class="btn btn-primary" href="{{url('admin/product_attribute/'.$attribute['id'].'/add-color')}}">Add colors </a></div>                      
                               </td>
                            </tr>
                            

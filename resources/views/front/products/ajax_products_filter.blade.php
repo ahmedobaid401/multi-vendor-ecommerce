@@ -7,7 +7,7 @@
                     <div class="products">
                       <div class="product">
                         <div class="product-image">
-                          <div class="image"> <a href="detail.html"><img  src="{{url('uploaded/front/images/product_images/small/'.$categoryproduct['product_image'])}}" alt=""></a> </div>
+                          <div class="image"> <a href="{{url('product/'.$categoryproduct['id'])}}"><img  src="{{url('uploaded/front/images/product_images/small/'.$categoryproduct['product_image'])}}" alt=""></a> </div>
                           <!-- /.image -->
                           
                           <div class="tag new"><span>new</span></div>
@@ -17,14 +17,14 @@
                         <div class="product-info text-left">
 
                         <h6 > {{$categoryproduct['product_code']}}/{{$categoryproduct['brand']['name']}}/{{$categoryproduct['product_color']}}  </h6> 
-                          <h3 class="name"><a href="detail.html"> {{$categoryproduct['product_name']}} </a></h3> 
+                          <h3 class="name"><a href="{{url('product/'.$categoryproduct['id'])}}"> {{$categoryproduct['product_name']}} </a></h3> 
                           <div class="rating rateit-small"></div>
                           <div class="description">{{$categoryproduct['description']}}</div>
                           <div class="product-price">
 
                               <?php  $getDiscountPrice = App\Models\Product::getDiscountPrice($categoryproduct['id']); ?>
-                                @if($getDiscountPrice >0)
-                                 <span class="price"> ${{$getDiscountPrice}} </span>
+                                @if($getDiscountPrice['discount_price'] >0)
+                                 <span class="price"> ${{$getDiscountPrice['discount_price']}} </span>
                                    <span class="price-before-discount">$ {{$categoryproduct['product_price']}}</span>
                                @else
                                 <span class="price"> ${{$categoryproduct['product_price']}} </span>
@@ -92,8 +92,8 @@
                             <div class="rating rateit-small"></div>
                             <div class="product-price">        
                                <?php  $getDiscountPrice = App\Models\Product::getDiscountPrice($categoryproduct['id']); ?>
-                            @if($getDiscountPrice >0)
-                                  <span class="price"> ${{$getDiscountPrice}} </span>
+                            @if($getDiscountPrice['discount_price'] >0)
+                                  <span class="price"> ${{$getDiscountPrice['discount_price']}} </span>
                                     <span class="price-before-discount">$ {{$categoryproduct['product_price']}}</span>
                              @else
                                     <span class="price"> ${{$categoryproduct['product_price']}} </span>

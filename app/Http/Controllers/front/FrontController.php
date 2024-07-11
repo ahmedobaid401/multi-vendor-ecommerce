@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\front;
 
+use Session;
 use App\Models\Slider;
 use App\Models\Product;
 use App\Models\Section;
@@ -23,8 +24,7 @@ class FrontController extends Controller
   
   $featuredProducts=Product::where("status",1)->where("is_featured","yes")->limit(8)->get()->toArray();
   
-
-   //dd($bestSellers);
+  
 
  
  return view("front.index",compact("sections","newarrivals","bestsellers","featuredProducts"));

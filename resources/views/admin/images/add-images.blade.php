@@ -35,7 +35,7 @@
 
                      <div class="form-group m-3">
                       <label for="product_color" >Product color</label>
-                      &nbsp;{{$product["product_color"]}} 
+                      <input type="text" name="color"   style="width:110px;" placeholder="color" required />
                     </div>
 
                      <div class="form-group m-3">
@@ -45,10 +45,18 @@
 
                     <div class="field_wrapper form-group m-3">
                           <div class="mb-3">
-                           <input type="file" multiple="" name="images[]"   style="width:110px;" id="images" placeholder="add images" required/>
-                          
-                       </div>
+                            <lable> select a primary image</lable>
+                           <input type="file"   name="image_primary"   style="width:110px;"   placeholder="add primary image" required />        
+                         </div>
                     </div>
+
+                    <div class="field_wrapper form-group m-3">
+                          <div class="mb-3">
+                          <lable> select multiple images </lable>
+                           <input type="file" multiple="" name="images[]"   style="width:110px;" id="images" placeholder="add images" required />        
+                         </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary m-3" style="width:120px;" >Submit</button>                                                                                                                                        
                   </form>      
                   
@@ -78,7 +86,7 @@
                                
                           
                               <td>
-                              <image    src="{{asset('uploaded/front/images/product_images/small/'.$image['image'])}}" style="width:90px;"/>
+                              <image    src="{{asset('uploaded/front/images/product_images/'.$image['image'])}}" style="width:90px;"/>
                               </td>
                               
                                                                                                                                                                                

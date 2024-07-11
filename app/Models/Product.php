@@ -46,29 +46,45 @@ public function images(){
   return $this->hasMany(ProductImage::class,"product_id","id");
 }
 
-public static function getDiscountPrice($product_id){
+// get discount price or price 
+public static function getDiscountPrice($product_id, $size=null){
 
-    $proDetails=Product::select("id","category_id","product_price","product_discount")->where("id",$product_id)->first();
+    $proDetails=Product::select("id","category_id","product_price","product_discount")->with(["attributes"=>function ($query) use($size){
+      $query->where("size",$size)->first();
+    }])->where("id",$product_id)->first();
 
     $proDetails=json_decode(json_encode($proDetails),true);
- 
+  
 
    $catDetails=Category::select("id","category_discount")->where("id",$proDetails["category_id"])->first();
    $catDetails=json_decode(json_encode($catDetails),true);
+if($size!==null){
+   
+  $product_price=$proDetails['attributes'][0]['price'];
+  $attribute_price=$proDetails['attributes'][0]['price'];
+}else{
+  $product_price=$proDetails['product_price'];
+  $attribute_price= 0;
+  
+}
 
  if($proDetails["product_discount"]  >0){
-  $discount_price= $proDetails["product_price"] - ($proDetails["product_price"] * $proDetails["product_discount"]/100);
+  $discount_price= $product_price - ($product_price * $proDetails["product_discount"]/100);
    
  }elseif($catDetails["category_discount"] >0){
-  $discount_price=  $proDetails["product_price"] - ($proDetails["product_price"] * $catDetails["category_discount"]/100);
+  $discount_price=  $product_price - ($product_price * $catDetails["category_discount"]/100);
    
 
  }else{
   $discount_price=0;
 
  }
-
-   return $discount_price ;
+ 
+   return [
+           "discount_price"=>$discount_price ,
+           "product_price"=>$product_price,
+          "attribute_price"=>$attribute_price
+          ];
 
 }
 

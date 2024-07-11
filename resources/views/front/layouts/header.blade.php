@@ -104,12 +104,11 @@
                         @foreach($section["categories"] as $category)
                           <div class="col-xs-12 col-sm-6 col-md-2 col-menu">
                           
-                            <h2 class="title">{{$category["category_name"]}}</h2>
+                            <h2 class="title"> <a href="{{url($category['url'])}}">{{$category["category_name"]}} </a> </h2>
                             
                             <ul class="links">
                             @if(isset($category["sub_categories"])&&count($category["sub_categories"])>0)
-                                 @foreach($category["sub_categories"] as $subCategory)
-                                 <?php  //  echo   dd ($subCategory['url']);           ?>
+                                 @foreach($category["sub_categories"] as $subCategory) 
                               <li><a href="{{url($subCategory['url'])}}">{{$subCategory["category_name"]}}</a></li>
                               @endforeach
                               @endif

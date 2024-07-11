@@ -28,7 +28,7 @@ class AdminController extends Controller
 {
 
     public function dashboard(Request $request){
-       // dd( $request->segment(2));
+       
         return view('admin.dashboard');
     }
 
@@ -39,7 +39,7 @@ class AdminController extends Controller
         if(!$request->ismethod('post')) {
            return view('admin.login');
        }
-      // dd($request->all());
+  
          $request->validate([
             'email' =>'required|email',
             'password' => 'required|min:8'
@@ -55,13 +55,15 @@ class AdminController extends Controller
         return back()->with('error','Invalid Credentials');
       
       
-    }
+    }// end login 
+
+
 ///////////////////////////////// //// 
     public function logout(){   
         Auth::guard('admin')->logout();
         return redirect('admin/login') ;
-    }
-///////////////////////////////////////
+    }// end logout
+ 
 
  //////////// update password ///////////////
     public function updatePassword(Request $request){
@@ -71,12 +73,10 @@ class AdminController extends Controller
     }
 
 /////////////////// update vendor details ///////////////////////
-
-//////////////////////////////////////////////////////
  public function updateVendorDetails($slug,Request $request){
        
     $country=config("countryTable");
-   // dd($country);
+   
      if($slug=='personal'){
 
        $vendor_personal=Vendor::where('id',Auth::guard('admin')->user()->vendor_id)->first();
@@ -136,7 +136,7 @@ class AdminController extends Controller
     public function admins($type=null){        
         $admins=Admin::query();
         if($type!=='all'){
-            $admins->where('type',$type)->first(); 
+            $admins->where('type',$type)->get()->toArray(); 
         } 
                    
        $admins= $admins->get()->toArray();    

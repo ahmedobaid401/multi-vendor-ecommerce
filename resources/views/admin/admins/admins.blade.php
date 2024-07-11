@@ -12,7 +12,7 @@
                      There is no admins
                      @else
                   </p>
-                  <div  >
+                   
                      <table id="d_Table" class="table table-striped display">
                         <thead>
                            <tr>
@@ -62,7 +62,7 @@
                               
                                  @if($admin['status']==1)
                                  
-                                  <a href="javascript:void(0)" class="updateStatus" id="Active" object="admin" object_id="{{$admin['id']}}"
+                                  <a href="javascript:void(0)" class="updateStatus" id="Active-{{$admin['id']}}"  object="admin" object_id="{{$admin['id']}}"
                                     status="Active">  
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16" fill="currentColor" class="bi bi-x-lg">
                                       <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0"/>
@@ -73,7 +73,7 @@
                                  @else
                                  
                                  <a href="javascript:void(0)"  class="updateStatus"
-                                 status="inactive" object="admin" object_id="{{$admin['id']}}" id="Inactive">  
+                                 status="Inactive" object="admin" object_id="{{$admin['id']}}" id="Inactive-{{$admin['id']}}">  
                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                                     <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
                                   </svg>                           
@@ -88,7 +88,7 @@
                             
                               
                                 <td> 
-                              @if($admin['vendor_id']==1)
+                              @if($admin['vendor_id']>0)
 
                               <a href="{{url('admin/admins/view/'.$admin['id'])}}" class="btn btn-info btn-sm btn-icon-text" >
                                <i class="ti-eye btn-icon-prepend"></i> view 
@@ -103,7 +103,7 @@
                           
                         </tbody>
                      </table>
-                  </div>
+                  
                   @endif
                </div>
             </div>

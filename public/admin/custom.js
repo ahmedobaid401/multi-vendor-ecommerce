@@ -122,18 +122,31 @@ $("#section_id").change( function(){
 
 });// end append categories
 
- //////////////////////// add rempve fields //////////////////////////////
+ //////////////////////// add-rempve fields //////////////////////////////
     // Once add button is clicked
     var maxField = 10; //Input fields increment limitation
     var addButton = $('.add_button'); //Add button selector
+    var addColor = $('.add_button').attr("id"); //Add button selector
     var wrapper = $('.field_wrapper'); //Input field wrapper
-    var fieldHTML = '<div class="mb-3">     <input type="text" name="size[]" style="width:110px;"  placeholder="size" required/>'
-                             + ' <input type="text" name="sku[]"  style="width:110px;" placeholder="sku" required/>'
+    var fieldHTML = '<div class="mb-3">  <input type="text" name="size[]" style="width:110px;"  placeholder="size" required/>'
+                             + ' <input type="text" name="sku[]"  style="width:110px;" placeholder="sku" required/>'                         
                              +' <input type="text" name="price[]" style="width:110px;" placeholder="price" required/>'
                              + ' <input type="text" name="stock[]"  style="width:110px;" placeholder="stock" required/>' 
                              + '<a href="javascript:void(0);" class="remove_button"> remove </a>'
                     + ' </div>'; //New input field html 
+                     
     var x = 1; //Initial field counter is 1
+ 
+    // add color
+  if(addColor=="add-color"){
+    //alert(addColor);
+        var fieldHTML = '<div class="mb-3">  <input type="text" name="color[]" style="width:110px;"  placeholder="color" required/>'
+                                                 
+                              
+                             + ' <input type="text" name="stock[]"  style="width:110px;" placeholder="stock" required/>' 
+                             + '<a href="javascript:void(0);" class="remove_button"> remove </a>'
+                    + ' </div>'; //New input field html 
+  }
     $(addButton).click(function(){
         //Check maximum number of input fields
         if(x < maxField){ 

@@ -1162,8 +1162,8 @@ use App\Models\Product;
                     <div class="description"></div>
                     <div class="product-price"> 
                     <?php  $getDiscountPrice = App\Models\Product::getDiscountPrice($featuredProduct['id']); ?>
-                            @if($getDiscountPrice >0)
-                                  <span class="price"> ${{$getDiscountPrice}} </span>
+                            @if($getDiscountPrice['discount_price'] >0)
+                                  <span class="price"> ${{$getDiscountPrice['discount_price']}} </span>
                                     <span class="price-before-discount">$ {{$featuredProduct['product_price']}}</span>
                              @else
                                     <span class="price"> ${{$featuredProduct['product_price']}} </span>
@@ -1254,8 +1254,8 @@ use App\Models\Product;
                             <div class="rating rateit-small"></div>
                             <div class="product-price">
                             <?php  $getDiscountPrice = App\Models\Product::getDiscountPrice($bestseller['id']); ?>
-                            @if($getDiscountPrice >0)
-                                  <span class="price"> ${{$getDiscountPrice}} </span>
+                            @if($getDiscountPrice['discount_price'] >0)
+                                  <span class="price"> ${{$getDiscountPrice['discount_price']}} </span>
                                     <span class="price-before-discount">$ {{$bestseller['product_price']}}</span>
                              @else
                                     <span class="price"> ${{$bestseller['product_price']}} </span>
@@ -1419,8 +1419,8 @@ use App\Models\Product;
                     <div class="description"></div>
                     <div class="product-price">
                       <?php  $getDiscountPrice = App\Models\Product::getDiscountPrice($newarrival->id);    ?>
-                          @if($getDiscountPrice >0)
-                           <span class="price"> ${{$getDiscountPrice}} </span>
+                          @if($getDiscountPrice['discount_price'] >0)
+                           <span class="price"> ${{$getDiscountPrice['discount_price']}} </span>
                           <span class="price-before-discount">$ {{$newarrival->product_price}}</span>
                           @else
                           <span class="price"> ${{$newarrival->discount}} </span>

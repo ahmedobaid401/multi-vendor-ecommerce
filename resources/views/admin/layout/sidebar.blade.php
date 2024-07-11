@@ -16,7 +16,7 @@
             <div class="collapse" id="ui-basic">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item" @if (activSidebar(2,"admin-update-password")) style='background:#2e2c7f;'  @endif > <a class="nav-link" href="{{url('admin/admin-update-password')}}">update admin password</a></li>
-                <li class="nav-item"@if (activSidebar(3,"admin-update-details")) style='background:#2e2c7f;'  @endif  > <a class="nav-link" href="{{url('admin-update-details')}}">update admin details </a></li>
+                <li class="nav-item"@if (activSidebar(3,"admin-update-details")) style='background:#2e2c7f;'  @endif  > <a class="nav-link" href="{{url('admin/admin-update-details')}}">update admin details </a></li>
         
               </ul>
             </div>  
@@ -47,7 +47,7 @@
             <div class="collapse" id="form-elements-2">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item" @if (activSidebar(3,"admin")) style='background:#2e2c7f;'  @endif ><a class="nav-link" href="{{url('admin/admins/admin')}}">Admins</a></li>
-                <li class="nav-item" @if (activSidebar(3,"subadmin")) style='background:#2e2c7f;'  @endif ><a class="nav-link" href="{{url('admin/admins/subadmin')}}">SubAdmins</a></li>
+                <li class="nav-item" @if (activSidebar(3,"superAdmin")) style='background:#2e2c7f;'  @endif ><a class="nav-link" href="{{url('admin/admins/superAdmin')}}">SuperAdmins</a></li>
                 <li class="nav-item" @if (activSidebar(3,"vendor")) style='background:#2e2c7f;'  @endif ><a class="nav-link" href="{{url('admin/admins/vendor')}}">Vendors</a></li>
                 <li class="nav-item" @if (activSidebar(3,"all")) style='background:#2e2c7f;'  @endif ><a class="nav-link" href="{{url('admin/admins/all')}}">All</a></li>
               </ul>

@@ -13,6 +13,7 @@ use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use App\Models\ProductsFilter;
 use App\Models\ProductAttribute;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
@@ -162,7 +163,7 @@ if($request->hasFile("product_video")){
   $product->product_video= $video_name ;
 }   
     
-$admin_id=Auth::guard("admin")->user()->id;
+ 
 $admin_type=Auth::guard("admin")->user()->type; 
 $vendor_id=Auth::guard("admin")->user()->vendor_id; 
  if($admin_type=="vendor"){
@@ -172,7 +173,7 @@ $vendor_id=Auth::guard("admin")->user()->vendor_id;
  //// store filter column
  if(isset($data['filters'])){ 
   $filters= $data['filters'];
- //dd($filters);
+ 
    foreach($filters as $filter=>$values ){
          foreach($values as $value){ 
             $product->{$filter}=$value;
@@ -235,16 +236,18 @@ $product->save();
        if($request->isMethod("post")){
         
         $data=$request->all();
+        //dd()
         foreach($data["sku"] as $key=>$value){
           ///// sku duplicate check
           $exist_sku=ProductAttribute::where("sku",$value)->count();
-          if($exist_sku>0){
+         if($exist_sku>0){
             return redirect()->back()->with("error_message","sku already existed ");
           }
+
         ///// size duplicate check
           $exist_size=ProductAttribute::where("product_id",$id)->where("size",$data["size"][$key])->count();
           if($exist_size>0){
-            return redirect()->back()->with("error_message","size already existed ");
+            return redirect()->back()->with("error_message","size-color already existed ");
           }
 
              $attribute= new ProductAttribute;
@@ -253,6 +256,7 @@ $product->save();
              $attribute->size=$data["size"][$key];
              $attribute->price=$data["price"][$key];
              $attribute->stock=$data["stock"][$key];
+             
              $attribute->status= 1;
 
              $attribute->save();
@@ -285,30 +289,88 @@ $product->save();
 
     }//// end function
 
+
+
+// add colors
+public function addAttributeColor(Request $request,$id){
+  $productAttribute=ProductAttribute::where("id",$id)->select("id","size","product_id")->first()->toArray();
+ // dd($productAttribute);
+   if($request->isMethod("post")){
+    
+    $data=$request->all();
+    //dd($data);
+    foreach($data["color"] as $key=>$value){
+      ///// color-size duplicate check
+      $exist_size_color =DB::table("Product_attribute_color")->where("size",$value)->where("size",$data['size'])->count();
+     if($exist_size_color>0){
+        return redirect()->back()->with("error_message","size-color already existed ");
+      }
+
+         DB::table('Product_attribute_color')->insert([
+          "product_attribute_id"=>$id ,
+          "product_id"=>$data['product_id'],
+          "size"=>$data['size'],
+          "color"=>$value,
+          "stock"=>$data['stock'][$key],
+         ]);
+         
+          
+         
+     }
+
+       return redirect()->back()->with("success","colors has been added successfully");
+   }
+
+return view("admin.attributes.add-color",compact("productAttribute"));
+
+
+}///// end function 
+
+
+
+
+
+
+
+
     ///////////////////// add multiple images //////////////
     public function addImages(Request $request,$id){
 
     if($request->isMethod("post")){
-          
+          $data=$request->all();
       $img_files=$request->file("images");
+      //dd($data);
+      $img_files['image_primary']=$request->file('image_primary');
      // dd($img_files);
        foreach($img_files as $key=>$file){
-                 
+      //  dd($file); 
+        
           $image_extension=$file->getClientOriginalExtension();
           $image_name=$file->getClientOriginalName().rand(100,119999).".".$image_extension;
           $path_image=public_path()."/uploaded/front/images/product_images/";
-          Image::make($file)->resize(1000,1000)->save($path_image."large/".$image_name);
-          Image::make($file)->resize(500,500)->save($path_image."medium/".$image_name);
-          Image::make($file)->resize(250,250)->save($path_image."small/".$image_name);
+          Image::make($file)->resize(1000,1000)->save($path_image."/".$image_name);
+         // Image::make($file)->resize(500,500)->save($path_image."medium/".$image_name);
+        //  Image::make($file)->resize(250,250)->save($path_image."small/".$image_name);
           $image= new ProductImage;
+
+          if($key=="image_primary"){
+
+            $image->is_orginal_image="yes" ; 
+          }else{
+            $image->is_orginal_image="no" ; 
+
+          } 
+
           $image->product_id=$id;
           $image->image=$image_name ; 
+         
+          $image->color=$data['color']; 
           $image->status= 1;
           $image->save();      
 
           }
 
-              return redirect()->back()->with("success","attribute has been updated successfully"); 
+              return redirect()->back()->with("success","image has been updated successfully"); 
 
 
     }
@@ -494,9 +556,84 @@ public function append_filters(Request $request){
 
 
 
+// product details page
+public function product_details($id) {
+
+ //dd($vendor);
+  $product=Product::with(["section","category","brand","images","vendor","attributes"=>function($query){
+         $query->where("stock",">",0)->where("status",1);
+  }])->find($id)->toArray();
+
+  //dd($product['vendor']);
+   
+$vendor=Admin::with("vendor_personal","vendor_business","vendor_bank")->where("id",$product["vendor_id"])->first()->toArray();
+  $sections=Section::sections();
+  $categoryDetails=Category::get_details($product['category']['url']);
+  
+  return view("front.products.product_details",compact("vendor","product","sections","categoryDetails"));
+}
+
+// get price attribute by ajax
+public function get_price_attribute(Request $request){
+  if($request->ajax()){
+    $data=$request->all();
+   // dd($data);
+    $product_id=$data['product_id'];
+    $size=$data['size'];
+    $color=$data['color'];
+    $price_arr=Product::getDiscountPrice($product_id,$size);
+    $product_attributes=ProductAttribute::where("product_id",$product_id)->get()->toArray();
+    // check the color-size
+    $product_size_color=DB::table("product_attribute_color")->where("product_id",$product_id)
+    ->where("color",$color)->where("size",$size)->first();
+    if($product_size_color){
+      $stock=$product_size_color->stock;
+    }else{
+      $stock=0;
+    }
+
+    $discount_price=$price_arr["discount_price"];
+    
+    $attribute_price=$price_arr["attribute_price"];
+     
+    return response()->json([
+      "discount_price"=> $discount_price,
+      "attribute_price"=>$attribute_price,
+      "product_attributes"=>$product_attributes,
+      "stock"=>$stock
+
+]);
+
+  }
+
+}// end get price attribute
+
+// get price attribute by ajax
+public function get_color_product(Request $request){
+  if($request->ajax()){
+    $data=$request->all();
+   // dd($data);
+    $color=$data['color'];
+    $size=$data['size'];
+    $product_id=$data['product_id'];
+    
+   
+    $product_attribute_color=DB::table("product_attribute_color")->where("product_id",$product_id)
+    ->where("color",$color)->where("size",$size)->first();
+    if($product_attribute_color){
+      $stock=$product_attribute_color->stock;
+    }else{
+      $stock=0;
+    }
 
 
+    
+     
+    return response()->json([$stock]);
 
+  }
+
+}// end get price attribute
 
 
 
@@ -507,3 +644,4 @@ public function append_filters(Request $request){
 
  
 }// end class
+ 

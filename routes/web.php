@@ -78,6 +78,9 @@ Route::post("products/append_filters",[ProductController::class,"append_filters"
 /////////////////////////////////// Atributes/////////////////////////////////
 Route::match(["get","post"],"/add-edit-attributes/{id?}",[ProductController::class,"addEditAttributes"]); 
 Route::post("/edit-attribute/{id?}",[ProductController::class,"editAttributes"]); 
+Route::match(["get","post"],"/product_attribute/{attribute_id}/add-color",[ProductController::class,"addAttributeColor"]); 
+ 
+
 
 
 ////////////////////// images module////////////////////
@@ -116,13 +119,19 @@ Route::get("filterValue/delete/{id}",[FilterController::class,"delete"]);
 
  
 
-///// vendors
+// vendors
 
 Route::get("/vendor/login-register",[VendorController::class,"login_register"]);
 Route::post("/vendor/register",[VendorController::class,"register"]);
 
 // confirm vendor account
 Route::get("/vendor/confirm/{email}",[VendorController::class,"confirm_vendor"]);
+
+// product detail page
+Route::get("/product/{id}",[ProductController::class,"product_details"]);
+Route::post("/product/get_price_attribute",[ProductController::class,"get_price_attribute"]);
+Route::post("/product/get_color_product",[ProductController::class,"get_color_product"]);
+
 
  
 
