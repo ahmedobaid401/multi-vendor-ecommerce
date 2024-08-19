@@ -1,19 +1,22 @@
 <?php
 
+use App\sms\SmsSend;
 use App\Models\Category;
 use App\Http\Middleware\Admin;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\front\CartController;
+use App\Http\Controllers\front\UserController;
 use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\front\FrontController;
 use App\Http\Controllers\admin\FilterController;
 use App\Http\Controllers\admin\SliderController;
+use App\Http\Controllers\front\VendorController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\front\VendorController;
 
 //require  __DIR__.'/auth.php';
 Route::get('/', function () {
@@ -128,9 +131,42 @@ Route::post("/vendor/register",[VendorController::class,"register"]);
 Route::get("/vendor/confirm/{email}",[VendorController::class,"confirm_vendor"]);
 
 // product detail page
-Route::get("/product/{id}",[ProductController::class,"product_details"]);
 Route::post("/product/get_price_attribute",[ProductController::class,"get_price_attribute"]);
+Route::get("/product/{id}",[ProductController::class,"product_details"]);
+
 Route::post("/product/get_color_product",[ProductController::class,"get_color_product"]);
+
+
+// cart module
+
+Route::post("/cart/add",[CartController::class,"addTocart"]);
+Route::get("/cart/show",[CartController::class,"cartShow"]);
+Route::post("/cart/update",[CartController::class,"cartUpdate"]);
+Route::post("/cart/delete",[CartController::class,"cartDelete"]);
+Route::post("/cart/update-total",[CartController::class,"updateTotal"]);
+
+
+
+//user registering prosess
+
+Route::get("user/register-login",[UserController::class,"register_login"])->name("login");
+Route::post("user/store",[UserController::class,"store"]);
+Route::post("user/login",[UserController::class,"userLogin"]);
+Route::get("user/confirm/{code}",[UserController::class,"confirmAccount"]);
+
+Route::middleware("auth")->group(function () {
+Route::get("user/account/{id}",[UserController::class,"userAccount"])->name("userAccount");
+Route::get("user/account-edit",[UserController::class,"userAccountEdit"])->name("userAccountEdit");
+Route::post("user/account-update",[UserController::class,"userAccountUpdate"]);
+
+});
+Route::get("user/forget-password",[UserController::class,"forgetPassword"]);
+Route::post("user/new-password",[UserController::class,"newPassword"]);
+Route::post("user/put-new-password",[UserController::class,"putNewPassword"]);
+Route::get("user/new-password-form/{code}",[UserController::class,"NewPasswordForm"]);
+ 
+
+
 
 
  

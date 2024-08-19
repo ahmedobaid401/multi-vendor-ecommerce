@@ -295,7 +295,7 @@
     <div class="product-item-holder size-big single-product-gallery small-gallery">
 
         <div id="owl-single-product">
-        
+        @if(!empty($product['images'] ))
            @foreach($product['images'] as $key=>$image)
             <div class="single-product-gallery-item" id="{{$key}}">
                 <a data-lightbox="image-1" data-title="Gallery" href="{{asset('uploaded/front/images/product_images/'.$image['image'])}}">
@@ -303,6 +303,14 @@
                 </a>
             </div><!-- /.single-product-gallery-item -->
         @endforeach
+		@else
+		<div class="single-product-gallery-item" id=" ">
+                <a data-lightbox="image-1" data-title="Gallery" href="{{asset('uploaded/front/images/product_images/small/'.$product['product_image'])}}">
+                    <img class="img-responsive"   src="{{asset('uploaded/front/images/product_images/small/'.$product['product_image'])}}" data-echo="{{asset('uploaded/front/images/product_images/small/'.$product['product_image'])}}" />
+                </a>
+            </div><!-- /.single-product-gallery-item -->
+
+		@endif
         </div><!-- /.single-product-slider -->
 
 
@@ -365,21 +373,20 @@
 											<span class="label">Available sizes:</span>
 										</div>	
 									</div>
+									<form action="{{url('cart/add')}}" method="post"  >
+										@csrf
+										<input type="hidden" name="product_id" value="{{$product['id']}}"/>
 									<div class="col-sm-9">
 										<div class="stock-box">
+										@if(count($product['attributes']) > 0 )
 											<select name="size" id="get_price" product_id="{{$product['id']}}" class="select-box product-size">
 												 
-												@foreach($product['attributes'] as $attribute)
-												<option value="{{$attribute['size']}}">{{$attribute['size']}}</option>
-
-												 
-												@endforeach
-
-
-												
-                                             
-
+											    	@foreach($product['attributes'] as $attribute)
+											     	<option value="{{$attribute['size']}}" @if($attribute['size']==$size) selected @endif >{{$attribute['size']}}</option>				 
+												    @endforeach
+                                                
 											</select>
+										@endif
 										 
 										</div>	
 									</div>
@@ -390,17 +397,18 @@
 							<div class="description-container m-t-20">
 								 {{$product['description']}}
 						  </div><!-- /.description-container --> 
-							  
-						<div >color : <span class="color-ajax"> </span></div>
-						<div > in stock : <span class="in-stock-ajax"> </span></div>
-					 @if(!empty($product['images']))
+						  <input id="selected-color" type="hidden" name="color" value="{{ $color}}"/>
+						<div >color : <span class="color-ajax">{{ $color}}</span></div>
+						<div > in stock : <span class="in-stock-ajax">{{ $stock}} </span></div>
+						<input id="image-item" type="hidden" name="item_image" value=" "  />
+					 @if(isset($product['images'])&&!empty($product['images']))
 							<div class="row">
 	@foreach($product['images'] as $key=>$image)
 	
 	   @if($image['is_orginal_image']=="yes")
 	   <div class="col-md-3">
-
-		<a class="horizontal-thumb color-photo"  color="{{$image['color']}}"data-target="#owl-single-product" data-slide="{{$key}}" href="#{{$key}}">
+         
+		<a class="horizontal-thumb color-photo"  color="{{$image['color']}}" image-name="{{$image['image']}}" data-target="#owl-single-product" data-slide="{{$key}}" href="#{{$key}}">
 			<img class="img-responsive" width="70" height="50" alt="" src="{{asset('uploaded/front/images/product_images/'.$image['image'])}}" data-echo="{{asset('uploaded/front/images/product_images/'.$image['image'])}}" />
 		</a>
 	</div>
@@ -409,7 +417,8 @@
 	@endforeach 
 	
 					</div>
-					@endif 	
+					 
+				@endif
 					
 							<div class="price-container info-container m-t-20">
 								<div class="row">
@@ -417,10 +426,10 @@
 
 									<div class="col-sm-6">
 										<div class="price-box">
-									    	<?php  $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id']); ?>
-									    	@if($getDiscountPrice['discount_price']>0)
-                                             <span class="price price-after-discount"> ${{$getDiscountPrice['discount_price']}} </span>
-											 <span class="price-before-discount">$ {{$product['product_price']}}</span>
+										<?php $getDiscountPrice = App\Models\Product::getDiscountPrice($product['id'],$size);?>
+									    	 @if($getDiscountPrice['discount_price'] > 0)
+                                             <span class="price price-after-discount"> ${{$price}} </span>
+											 <span class="price-before-discount">$ {{$getDiscountPrice['attribute_price']}}</span>
                                             @else
                                              <span class="price price-orginal"> ${{$product['product_price']}} </span>
 
@@ -428,7 +437,7 @@
 
 										</div>
 									</div>
-
+                                 
 									<div class="col-sm-6">
 										<div class="favorite-button m-t-10">
 											<a class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Wishlist" href="#">
@@ -457,19 +466,18 @@
 										<div class="cart-quantity">
 											<div class="quant-input">
 								                <div class="arrows">
-								                  <div class="arrow plus gradient"><span class="ir"><i class="icon fa fa-sort-asc"></i></span></div>
-								                  <div class="arrow minus gradient"><span class="ir"><i class="icon fa fa-sort-desc"></i></span></div>
+												 
 								                </div>
-								                <input type="text" value="1">
+								                <input type="number" id="quantity-input" value="1" min="1"  name="quantity"/>
 							              </div>
 							            </div>
 									</div>
 
 									<div class="col-sm-7">
-										<a href="#" class="btn btn-primary"><i class="fa fa-shopping-cart inner-right-vs"></i> ADD TO CART</a>
+										<button type="submit" id="submit-button"   class="btn btn-primary"><i class="fa fa-shopping-cart inner-right-vs"></i> ADD TO CART</button>
 									</div>
 
-									
+									</form>
 								</div><!-- /.row -->
 							</div><!-- /.quantity-container -->
 
@@ -501,9 +509,7 @@
 										<?php
 										 $filters= App\Models\ProductsFilter::filter_available($product['category_id']);
 										  
-										 ?>
-
-                                       
+										 ?>               
 
 											@foreach($filters as $filter)
 											<div class="row"> 

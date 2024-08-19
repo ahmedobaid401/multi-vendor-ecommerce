@@ -97,6 +97,7 @@ class AdminController extends Controller
         }
       $vendor_personal->toArray();
        return view('admin.update-vendor-details',compact('slug','vendor_personal','country'));
+       
  ////////////// business details
      }else if($slug=='business'){
 

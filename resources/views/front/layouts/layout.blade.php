@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,6 +22,7 @@
 <link rel="stylesheet" href="{{asset('front/css/animate.min.css')}}">
 <link rel="stylesheet" href="{{asset('front/css/rateit.css')}}">
 <link rel="stylesheet" href="{{asset('front/css/bootstrap-select.min.css')}}">
+<link rel="stylesheet" href="{{asset('custom.css')}}">
 
 <!-- Icons/Glyphs -->
 <link rel="stylesheet" href="{{asset('front/css/font-awesome.css')}}">
@@ -40,11 +42,14 @@
       <div class="header-top-inner">
         <div class="cnt-account">
           <ul class="list-unstyled">
-            <li><a href="#"><i class="icon fa fa-user"></i>My Account</a></li>
+              @if(Auth::check())
+              
+            <li><a href="{{route('userAccount',Auth::id())}}"><i class="icon fa fa-user"></i>My Account</a></li>
+              @endif
             <li><a href="#"><i class="icon fa fa-heart"></i>Wishlist</a></li>
             <li><a href="#"><i class="icon fa fa-shopping-cart"></i>My Cart</a></li>
             <li><a href="#"><i class="icon fa fa-check"></i>Checkout</a></li>
-            <li><a href="#"><i class="icon fa fa-lock"></i>Login</a></li>
+            <li><a href="{{url('user/register-login')}}"><i class="icon fa fa-lock"></i>Register-Login</a></li>
           </ul>
         </div>
         <!-- /.cnt-account -->

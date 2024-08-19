@@ -1,0 +1,26 @@
+
+
+ 
+.load
+{
+display: none;
+background: rgba(255, 255, 255, 0.8);
+z-index: 9999;
+height: 100%;
+position: fixed;
+width: 100%;
+
+}
+
+.load img
+{
+    background: rgba(255, 255, 255, 0.8);
+left: 30%;
+margin-left: -32px;
+margin-top: -32px;
+position: absolute;
+z-index: 9999;
+ 
+}
+
+ 

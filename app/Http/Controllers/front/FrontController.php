@@ -7,6 +7,7 @@ use App\Models\Slider;
 use App\Models\Product;
 use App\Models\Section;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 
 
 
@@ -15,6 +16,7 @@ use App\Http\Controllers\Controller;
 class FrontController extends Controller
 {
  public function index(){
+  
    $sections=Section::sections();
    $bestsellers=Product::select("id","product_name","product_price","product_image")->where("is_bestseller","yes")
    ->where("status",1)->limit(8)->inRandomOrder()->get()->toArray();

@@ -409,7 +409,7 @@ return redirect()->back()->with("success","image has been deleted successfully")
 
 
 
-
+// products list
 public function listing(Request $request){
 
 
@@ -430,14 +430,21 @@ public function listing(Request $request){
   }
  
  
-$categoryproducts=Product::with("brand:id,name")->whereIn("category_id",$categoryDetails['cat_ids'])->where("status",1);
+$categoryproducts=Product::with(["brand:id,name","attributes","images"=>function($builder){
+$builder->select("id","product_id","image","color","is_orginal_image")->where("is_orginal_image","yes");
+}])->whereIn("category_id",$categoryDetails['cat_ids'])->where("status",1);
+
+ ;
+ // ajax_filter_sort
 if($request->ajax()){
+
+
   $data=$request->all();
    
  
 // checking for filters
 
-if(isset($data['filter'] )&& !empty($data['filter'] )){
+if(isset($data['filter'] ) && !empty($data['filter'] )){
   $filters_array=[];
   
  foreach($data["filter"] as $key=>$value){
@@ -469,16 +476,18 @@ if(isset($data["sizes"]) && !empty($data["sizes"])){
 // check colors
 if(isset($data["colors"]) && !empty($data["colors"])){
 
-  $productId=Product::select("id")->whereIn("product_color",$data["colors"])->get()->pluck("id")->toArray();
-  $categoryproducts->whereIn("id",$productId);
+  $productIds=DB::table("product_attribute_color")->select("product_id")->where("color",$data["colors"])->get()->pluck("product_id")->toArray();
+
+  $categoryproducts->whereIn("id",$productIds);
+ 
  }
  // end chek colors 
 
 // check brand
 if(isset($data["brand"]) && !empty($data["brand"])){
 
-  $productId=Product::select("brand_id")->whereIn("brand_id",$data["brand"])->get()->pluck("id")->toArray();
-  $categoryproducts->whereIn("id",$productId);
+  $productIds=Product::select("brand_id")->whereIn("brand_id",$data["brand"])->get()->pluck("id")->toArray();
+  $categoryproducts->whereIn("id",$productIds);
  }
  // end chek brand 
 
@@ -528,7 +537,7 @@ return view("front.products.ajax_products_filter",compact("categoryproducts","ca
 $categoryproducts =$categoryproducts->paginate(8);
  
 $sections=Section::sections();
-
+//dd($categoryproducts);
    return view("front.products.List",compact("sections","categoryproducts","categoryDetails","breadCrumb","url"));
  }else{
   abort(404);
@@ -557,20 +566,24 @@ public function append_filters(Request $request){
 
 
 // product details page
-public function product_details($id) {
+public function product_details(Request $request,$id ) {
 
- //dd($vendor);
+    $data=$request->query();
+    $size=$data['size'];
+    $color=$data['color'];
+    $stock=$data['stock'];
+    $price=$data['price'];
   $product=Product::with(["section","category","brand","images","vendor","attributes"=>function($query){
          $query->where("stock",">",0)->where("status",1);
   }])->find($id)->toArray();
 
-  //dd($product['vendor']);
+  //dd($product);
    
 $vendor=Admin::with("vendor_personal","vendor_business","vendor_bank")->where("id",$product["vendor_id"])->first()->toArray();
   $sections=Section::sections();
   $categoryDetails=Category::get_details($product['category']['url']);
   
-  return view("front.products.product_details",compact("vendor","product","sections","categoryDetails"));
+  return view("front.products.product_details",compact("vendor","product","sections","categoryDetails","size","color","stock","price"));
 }
 
 // get price attribute by ajax
@@ -624,11 +637,7 @@ public function get_color_product(Request $request){
       $stock=$product_attribute_color->stock;
     }else{
       $stock=0;
-    }
-
-
-    
-     
+    }  
     return response()->json([$stock]);
 
   }

@@ -38,10 +38,10 @@
         <div class="col-xs-12 col-sm-12 col-md-2 animate-dropdown top-cart-row"> 
           <!-- ============================================================= SHOPPING CART DROPDOWN ============================================================= -->
           
-          <div class="dropdown dropdown-cart"> <a href="#" class="dropdown-toggle lnk-cart" data-toggle="dropdown">
+          <div class="dropdown dropdown-cart"> <a href="{{url('cart/show')}}" class="dropdown-toggle lnk-cart" data-toggle="dropdown">
             <div class="items-cart-inner">
               <div class="basket"> <i class="glyphicon glyphicon-shopping-cart"></i> </div>
-              <div class="basket-item-count"><span class="count">2</span></div>
+              <div class="basket-item-count"><span class="count">23333</span></div>
               <div class="total-price-basket"> <span class="lbl">cart -</span> <span class="total-price"> <span class="sign">$</span><span class="value">600.00</span> </span> </div>
             </div>
             </a>
@@ -65,7 +65,7 @@
                 <div class="clearfix cart-total">
                   <div class="pull-right"> <span class="text">Sub Total :</span><span class='price'>$600.00</span> </div>
                   <div class="clearfix"></div>
-                  <a href="checkout.html" class="btn btn-upper btn-primary btn-block m-t-20">Checkout</a> </div>
+                  <a href="{{url('cart/show')}}" class="btn btn-upper btn-primary btn-block m-t-20">Checkout</a> </div>
                 <!-- /.cart-total--> 
                 
               </li>
@@ -132,7 +132,7 @@
                           <div class="col-xs-12 col-menu">
                             <ul class="links">
                               <li><a href="home.html">Homepppppppp</a></li>
-                              <li><a href="category.html">Category</a></li>
+                              <li><a href="category.html">Category 9999999999999999999</a></li>
                               <li><a href="detail.html">Detail</a></li>
                               <li><a href="shopping-cart.html">Shopping Cart Summary</a></li>
                               <li><a href="checkout.html">Checkout</a></li>

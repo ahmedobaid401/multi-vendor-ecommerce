@@ -74,10 +74,10 @@ $("#get_price").change(function(){
   var product_id=$(this).attr('product_id');
   var size = $(this).val();
   var color=$(".color-ajax").text();
-  //alert(color);
+  
    
   $.ajax({
-      url:"get_price_attribute",
+      url:"/ecom9/public/product/get_price_attribute",
       type:"post", 
       data:{size:size,color:color,product_id:product_id ,_token:csrf,},
       
@@ -121,21 +121,29 @@ $(".color-photo").on("click",function(){
   var color=$(this).attr("color");
   var product_id=$("#get_price").attr("product_id");
   var size=$("#get_price").val();
-// alert(product_id);
- $(".color-ajax").text(color);
+
+   // put color in the form
+  $("#selected-color").val(color);
+  $(".color-ajax").text(color);
+
+  // put image name in the form
+  var image_name=$(this).attr("image-name");
+  $("#image-item").val(image_name);
+ //alert(image_name);
+
 
 $.ajax({
   type:"post",
-  url:"get_color_product",
+  url:"/ecom9/public/product/get_color_product",
   data:{color:color, size:size ,product_id:product_id,_token:csrf},
   
   success:function(response){
    // alert(response);
     if(response <1){
       $(".in-stock-ajax").text("   not available");
-      
+      $("#submit-button").prop("disabled",true);
     }else{
-
+      $("#submit-button").prop("disabled",false);
       $(".in-stock-ajax").text( response);
     } 
            
@@ -151,24 +159,228 @@ $.ajax({
 
 });
 
+// disable add to cart button when stock is empty
+disableButtonAdd();
+ 
+$("#add-cart").on("submit",function(event){
+  event.preventDefault();
+  var color=$(".color-ajax").html();
+    
+  var data=$(this).serialize();
+
+  $.ajax({
+    url:"cart/add",
+    type:"post",
+    dat:{data:data,color:color,_token:csrf},
+    success:function(response){
+
+    },
+  });
+});
+
+// update quantity function
+$('#update-quantity').on("change",function(){
+  var quantity=$(this).val();
+  var price= $("#discount-price").text();
+ // alert(price * quantity);
+  $.ajax({
+    url:"update",
+    type:"post",
+    data:{quantity:quantity,_token:csrf},
+    success:function(response){
+      if(response["status"]=="error"){
+        alert("this quantity not avialable");
+      }else{
+        $("#update-quantity").val(response);
+        $("#grand-price").html(response["quantity"] * price);
+
+      }
+    
+    },error:function(){
+
+    }
+
+
+  });
+
+});
+
+//cart item delete
+$("#cartItemDelete").on("click",function(){
+ 
+ var id= $(this).attr('item-id');
+ var row= $(this).closest('tr');
+ 
+ $.ajax({
+  url:"delete",
+  type:"post",
+  data:{id:id,_token:csrf},
+  success:function(response){
+   // if(response["status"]=="success"){
+      //row.fadeOut(300,function(){
+        //$(this).remlove();
+     // });
+  //  }
+     row.remove();
+     updateTotal();
+  
+  },error:function(){
+    alert("failed.try again");
+  }
+
+}); // end ajax 
+
+
+});// end cartitem delete
 
 
 
+// user register 
+$('#registerForm').submit(function(event){
+  $(".load").show();
+  event.preventDefault();
+  var formData=$(this).serialize();
+ //alert(formData);
+  $.ajax({
+    url:"store",
+    type:"post",
+    data:{formData:formData, _token:csrf},
+    success:function(response){
+  $(".load").hide();
 
-
-
-
-});// document 
-
-
-
-
-
-
-
-
-
+        if(response.type=="success"){
+         window.location.href=response.url;
+        }else if(response.type=="error"){
+          $("#registerForm p").css({
+            "display":"none"
+          });
+          $.each(response.errors,function(i,error){
+            
+            $("#user-"+i).text(error);
+            $("#user-"+i).attr("style","color:red");
+         //  setTimeout(function(){
+           //   $("#user-"+i).css({
+            //    "display":"none"
+            //  });
+           // },3000);
+          });    
+        }
+    
+    },error:function(){
+      alert("failed.try again");
+    }
+  
+  }); // end ajax 
    
+  
+  }); // end '#registerForm').submit
+ 
+ // user login 
+$('#loginForm').submit(function(event){
+  event.preventDefault();
+  var formData=$(this).serialize();
+ //alert(formData);
+  $.ajax({
+    url:"login",
+    type:"post",
+    data:{formData:formData, _token:csrf},
+    success:function(response){
+        if(response.type=="success"){
+         window.location.href=response.url;
+        }else if(response.type=="error"){
+          $("#registerForm p").css({
+            "display":"none"
+          });
+          $.each(response.errors,function(i,error){
+            
+            $("#user-"+i).text(error);
+            $("#user-"+i).attr("style","color:red");
+         //  setTimeout(function(){
+           //   $("#user-"+i).css({
+            //    "display":"none"
+            //  });
+           // },3000);
+          });    
+        }else if(response.type=="incorrect"){
+          $("#user-incorrect").text(response.message);
+          $("#user-incorrect").attr("style","color:red");
+        }
+    
+    },error:function(){
+      alert("failed.try again");
+    }
+  
+  }); // end ajax 
+   
+  
+  }); // end user login
+
+
+
+ // forget password 
+ $('#forgetPasswordForm').submit(function(event){
+  event.preventDefault();
+  var email=$("#email").val();
+ //alert(formData);
+  $.ajax({
+    url:"new-password",
+    type:"post",
+    data:{email:email, _token:csrf},
+    success:function(response){
+        if(response.type=="success"){
+         window.location.href=response.url;
+        }else if(response.type=="error"){
+          $("#forgetPasswordForm p").css({
+            "display":"none"
+          });
+          $.each(response.errors,function(i,error){
+            
+            $("#user-"+i).text(error);
+            $("#user-"+i).attr("style","color:red");
+         //  setTimeout(function(){
+           //   $("#user-"+i).css({
+            //    "display":"none"
+            //  });
+           // },3000);
+          });    
+        }else if(response.type=="incorrect"){
+          $("#user-incorrect").text(response.message);
+          $("#user-incorrect").attr("style","color:red");
+        }
+    
+    },error:function(){
+      alert("failed.try again");
+    }
+  
+  }); // end ajax 
+   
+  
+  }); // end user login
+
+
+
+
+
+
+
+
+
+});// end document
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
   ///   ///    //// ////// //// ///// /// //// ///  //// ///   
   // get filter
 function get_filter(){
@@ -195,7 +407,36 @@ function get_data(class_name){
 
 
 
+// disable button add to cart
+function disableButtonAdd(){
+  var stock=$(".in-stock-ajax").text();
+ // alert(quantity);
+if(stock < 1){
+  $("#submit-button").prop("disabled",true)
+}
 
+
+}// end disable button 
+
+
+// update total
+function updateTotal(){
+  var total=$("#total").text();
+  $.ajax({
+    url:"update-total",
+    type:"post",
+    data:{_token:csrf},
+    success:function(response){
+     
+      $("#total").text("Total :"+response["total"]);
+    
+    },error:function(){
+      alert("failed.try again");
+    }
+  
+  }); // update total ajax 
+ 
+}
 
 
 /*
