@@ -2,7 +2,9 @@
 
 use App\sms\SmsSend;
 use App\Models\Category;
+use Illuminate\Http\Request;
 use App\Http\Middleware\Admin;
+use App\Models\DeliveryAddress;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\front\CartController;
@@ -12,10 +14,13 @@ use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\front\FrontController;
 use App\Http\Controllers\admin\FilterController;
 use App\Http\Controllers\admin\SliderController;
+use App\Http\Controllers\front\PaypalController;
 use App\Http\Controllers\front\VendorController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\admin\CategoryController;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+ 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 //require  __DIR__.'/auth.php';
@@ -111,16 +116,29 @@ Route::get("filterValue/delete/{id}",[FilterController::class,"delete"]);
  ///// end admin 
 
 
- /////////////      front end    ////////////
 
+
+
+ /////////////    front end    ////////////
+ Route::group([
+    'prefix' => LaravelLocalization::setLocale(),
+    'middleware' => ['localeSessionRedirect','localizationRedirect',  'localeViewPath']
+], 
+function()
+ {
+   // dd(url()->current());
  Route::get("/",[FrontController::class,"index"]);
+ 
 
  $categories=Category::select("url")->where("status",1)->get()->pluck("url")->toArray();
+
  foreach($categories as $key=>$url){
-    Route::match(["post","get"],"/".$url ,[ProductController::class,"listing"]);
+   Route::match(["post","get"],"/".$url ,[ProductController::class,"listing"]);
+     
  }
 
- 
+ // lang
+   
 
 // vendors
 
@@ -145,10 +163,29 @@ Route::post("/cart/update",[CartController::class,"cartUpdate"]);
 Route::post("/cart/delete",[CartController::class,"cartDelete"]);
 Route::post("/cart/update-total",[CartController::class,"updateTotal"]);
 
+// checkout 
+Route::match(["get","post"],"cart/checkout",[CartController::class,"checkout"]);
+Route::post("cart/check/address",function(){
+    $addresses=DeliveryAddress::deliveryAddresses();
+    if($addresses){
 
+        return response()->json(['has_address' => true]);
+    } else {
+        return response()->json(['has_address' => false]);
+    }
 
-//user registering prosess
+});
 
+// paypal
+Route::get("/paypal",[PaypalController::class,"payPal"]);
+
+// rating
+Route::post("add-rating",function(Request $request){
+  //dd($request->all());
+});
+
+//user registering prosess 
+ 
 Route::get("user/register-login",[UserController::class,"register_login"])->name("login");
 Route::post("user/store",[UserController::class,"store"]);
 Route::post("user/login",[UserController::class,"userLogin"]);
@@ -160,14 +197,13 @@ Route::get("user/account-edit",[UserController::class,"userAccountEdit"])->name(
 Route::post("user/account-update",[UserController::class,"userAccountUpdate"]);
 
 });
+
 Route::get("user/forget-password",[UserController::class,"forgetPassword"]);
 Route::post("user/new-password",[UserController::class,"newPassword"]);
 Route::post("user/put-new-password",[UserController::class,"putNewPassword"]);
 Route::get("user/new-password-form/{code}",[UserController::class,"NewPasswordForm"]);
- 
 
 
+});
 
-
- 
 

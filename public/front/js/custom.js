@@ -193,6 +193,8 @@ $('#update-quantity').on("change",function(){
       }else{
         $("#update-quantity").val(response);
         $("#grand-price").html(response["quantity"] * price);
+        $("#count-header").html(response["count"]);
+
 
       }
     
@@ -221,6 +223,8 @@ $("#cartItemDelete").on("click",function(){
         //$(this).remlove();
      // });
   //  }
+  $("#count-header").html(response["count"]);
+
      row.remove();
      updateTotal();
   
@@ -361,6 +365,58 @@ $('#loginForm').submit(function(event){
 
 
 
+// check address
+$('#check-address').on('submit', function (e) {
+  e.preventDefault(); // Prevent the form from submitting immediately
+
+  $.ajax({
+      url: "check/address", // Route to check address
+      method: "POST",
+      data: {
+          _token: csrf, // CSRF token for security
+      },
+      success: function (response) {
+          if (response.has_address) {
+              // If user has an address, submit the form
+             // alert('Address exists! Proceeding...');
+              $('#check-address').unbind('submit').submit(); // Allow the form to submit normally
+          } else {
+              // If no address, show a prompt to add an address
+             // alert('Please add your address!');
+              // You can also show a modal or input box here for the user to add an address
+               
+              $('#add-new-address').click();
+          }
+      }
+  });
+});
+
+
+
+
+
+// add new address
+$('#add-address-form').on('submit', function (e) {
+  e.preventDefault(); // Prevent the form from submitting immediately
+
+  $.ajax({
+      url: "/user/account-update", // Route to check address
+      method: "POST",
+      data: {
+          _token: csrf, // CSRF token for security
+      },
+      success: function (response) {
+          if (response.success) {
+              
+              alert(success);
+              
+          } else {
+            alert("error"); 
+               
+          }
+      }
+  });
+});// end fun
 
 
 

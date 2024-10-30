@@ -1,4 +1,4 @@
-use App\Models\Product;
+ 
 @extends("front/layouts/layout")
 
 @section("content")
@@ -1142,7 +1142,8 @@ use App\Models\Product;
         <!-- ============================================== WIDE PRODUCTS : END ============================================== --> 
         <!-- ============================================== FEATURED PRODUCTS ============================================== -->
         <section class="section featured-product wow fadeInUp">
-          <h3 class="section-title">Featured products</h3>
+ 
+          <h3 class="section-title">{{__("Featured products")}}</h3>
           <div class="owl-carousel home-owl-carousel custom-carousel owl-theme outer-top-xs">
             @foreach($featuredProducts as $featuredProduct)
             <div class="item item-carousel">
@@ -1161,7 +1162,10 @@ use App\Models\Product;
                     <div class="rating rateit-small"></div>
                     <div class="description"></div>
                     <div class="product-price"> 
-                    <?php  $getDiscountPrice = App\Models\Product::getDiscountPrice($featuredProduct['id']); ?>
+                    <?php 
+                    //dd($featuredProduct['id'],"kkkkkkkkkkkk");
+                     $getDiscountPrice = App\Models\Product::getDiscountPrice($featuredProduct['id']);
+                      ?>
                             @if($getDiscountPrice['discount_price'] >0)
                                   <span class="price"> ${{$getDiscountPrice['discount_price']}} </span>
                                     <span class="price-before-discount">$ {{$featuredProduct['product_price']}}</span>
@@ -1229,7 +1233,7 @@ use App\Models\Product;
         <!-- ============================================== BEST SELLER ============================================== -->
         
         <div class="best-deal wow fadeInUp outer-bottom-xs">
-          <h3 class="section-title">Best seller</h3>
+          <h3 class="section-title">{{__("Best seller")}}</h3>
           <div class="sidebar-widget-body outer-top-xs">
             <div class="owl-carousel best-seller custom-carousel owl-theme outer-top-xs">
               @foreach($bestsellers as $key=>$value )

@@ -8,15 +8,20 @@ use App\Models\Section;
 use App\Models\Category;
 use App\Models\ProductImage;
 use App\Models\ProductAttribute;
+use App\traits\i18ns;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
     use HasFactory;
+    use i18ns;
 
 protected $fillable=["status"];
-
+public $columnTranslate=["product_name","description"];
 
 
 public function section(){
@@ -46,17 +51,29 @@ public function images(){
   return $this->hasMany(ProductImage::class,"product_id","id");
 }
 
+
+ 
+
+
+
 // get discount price or price 
 public static function getDiscountPrice($product_id, $size=null){
+$locale=App::currentLocale();
+if($locale !=="en"){
+$id="products.id";
+}else{
+$id="id";
 
+}
+//dd($product_id);
     $proDetails=Product::select("id","category_id","product_price","product_discount")->with(["attributes"=>function ($query) use($size){
       $query->where("size",$size)->first();
-    }])->where("id",$product_id)->first();
+    }])->where($id,$product_id)->first();
 
     $proDetails=json_decode(json_encode($proDetails),true);
   
-
-   $catDetails=Category::select("id","category_discount")->where("id",$proDetails["category_id"])->first();
+//dd( $proDetails);
+   $catDetails=Category::select("id","category_discount")->where("categories.id",$proDetails["category_id"])->first();
    $catDetails=json_decode(json_encode($catDetails),true);
 if($size!==null){
    

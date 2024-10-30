@@ -182,7 +182,7 @@
 				<tr>
 					<td>
 						<div class="cart-checkout-btn pull-right">
-							<button type="submit" class="btn btn-primary checkout-btn">PROCCED TO CHEKOUT</button>
+							<a  href="{{url('cart/checkout')}}" class="btn btn-primary checkout-btn">PROCCED TO CHEKOUT</a>
 							<span class="">Checkout with multiples address!</span>
 						</div>
 					</td>

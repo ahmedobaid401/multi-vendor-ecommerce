@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\traits\i18ns;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
     use HasFactory;
+    use i18ns;
 
     protected $fillable=["status","parent_id","section_id","category_name","description","url","meta_title"
     ,"meta_description","meta_keywords"];
+    public $columnTranslate=["category_name","description"];
 
     public function section()  {
         return $this->belongsTo(Section::class,"section_id","id", "asyou" )->select("id","name");
@@ -52,7 +55,8 @@ class Category extends Model
   
                }//end if
                $categoryDetails['cat_ids']=$catIds;
-               $products=Product::select("id")->whereIn("category_id",$catIds)->get()->pluck("id")->toArray();
+               $products=Product::select("products.id")->whereIn("category_id",$catIds)->get()->pluck("id")->toArray();
+               
                $categoryDetails['products_category']=$products;
 
            return $categoryDetails;

@@ -130,9 +130,7 @@ class UserController extends Controller
           }else{
             return response()->json(["type"=>"error","errors"=>$validator->messages()]);
           }
-         
-            
-            
+                    
             
         }
         }// end user login
@@ -157,29 +155,47 @@ class UserController extends Controller
          
       ],[
         "email.unique"=>"email is already exists"
-      ])->validate();
-      
-       
-      
-      $userAddress=new UserAddress ; 
-      $userAddress->user_id= Auth::id();
-      $userAddress->country=$data['country_code'];
-      $userAddress->state=$data['state'];
-      $userAddress->city=$data['city'];
-      $userAddress->pincode=$data['pincode'];
-      $userAddress->address=$data['address'];
+      ]);
 
-      if( $userAddress->save()){
-        return back()->with("success","details account has inserted successfully");
+      if($validator->passes()){
+
+        $userAddress=new UserAddress ; 
+        $userAddress->user_id= Auth::id();
+        $userAddress->country=$data['country_code'];
+        $userAddress->state=$data['state'];
+        $userAddress->city=$data['city'];
+        $userAddress->email=$data['email'];
+        $userAddress->name=$data['name'];
+        $userAddress->pincode=$data['pincode'];
+        $userAddress->address=$data['address'];
+        if( $userAddress->save()){
+          if($request->ajax()){
+            return response()->json(["success"=>"details account has inserted successfully"]);
+  
+          }
+          return back()->with("success","details account has inserted successfully");
+        }else{
+          if($request->ajax()){
+            return response()->json(["error"=>"insert prossess has failed"]);
+  
+          }
+          return back()->with("error","  insert prossess has failed");
+  
+        }
       }else{
-        return back()->with("error","  insert prossess has failed");
+        if($request->ajax()){
+            return response()->json(["error-validation","errors"=>$validator->messages()]);
+        }else{
+          return back()->withErrors($validator)->withInput();
+        }
 
+         
       }
+      
+
+      
      
       
-      
-
-
     }// end fun
 
 
@@ -205,13 +221,13 @@ class UserController extends Controller
 
 // user account edit
 public function userAccountEdit(){
-   $country=include base_path("/data/country.php");
-  // dd($country);
+   $country=include(base_path("/data/country.php"));
+   
   $sections=[];
   $id=Auth::id();
- // dd($id);
+  
   $user=User::with("address")->where("id",$id)->first()->toArray();
-  //dd($user);
+ 
   return view("front.users.my-account-edit",compact("user","sections","country"));
 }
 

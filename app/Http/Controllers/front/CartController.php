@@ -4,13 +4,18 @@ namespace App\Http\Controllers\front;
 
  
 use App\Models\Cart;
+use App\Models\Order;
 use App\Models\Section;
 use Illuminate\Http\Request;
+use App\Models\OrdersProduct;
+use App\Models\DeliveryAddress;
 use App\Models\ProductAttribute;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+ 
 
 class CartController extends Controller
 {
@@ -91,6 +96,7 @@ class CartController extends Controller
      
     $cart=Cart::where("session_id",Session::get('session_id'))->first();
    $stock=Cart::getStock($cart->product_id,$cart->product_attribute_id,$cart->size,$cart->color);
+   $count=Cart::countItems();
    if($stock < $quantity){
       return response()->json([
             'status' => 'error',
@@ -106,7 +112,8 @@ class CartController extends Controller
    return response()->json([
 
         'status' => 'success',
-        'quantity' => $quantity
+        'quantity' => $quantity,
+        'count' => $count
       
    ]);
  }// end cart update
@@ -119,6 +126,8 @@ class CartController extends Controller
 
     
    $cart=Cart::where("id",$id )->first();
+   $count=Cart::countItems();
+
    if($cart){
       $cart->delete();
       return response()->json([
@@ -129,7 +138,8 @@ class CartController extends Controller
       return response()->json([
 
          'status' => 'error',
-         'message' =>"there is no item like this"
+         'message' =>"there is no item like this",
+         'count' =>$count,
       ]);
    }    
   
@@ -138,8 +148,8 @@ class CartController extends Controller
 public function updateTotal(Request $request){
    
     
-   $cart=Cart::where("session_id",Session::get('session_id'))->first();
- $total= $cart->total();
+    $cart=new Cart();
+   $total= $cart->total();
    
      return response()->json([
            'status' => 'success',
@@ -148,6 +158,139 @@ public function updateTotal(Request $request){
  
  
 }// end update total
+
+
+public function checkout(Request $request){
+   
+    $addresses=DeliveryAddress::deliveryAddresses();
+   // dd($addresses);
+   if($request->isMethod("post")){
+      //dd($addresses);
+      $data=$request->all();
+      //dd($data);
+      $countItems=Cart::countItems();
+       // check if cart is empty
+      if($countItems== 0) {
+
+         return redirect()->back()->with("error_message","please add item to checkout");
+      }
+
+      //check address
+      if(empty($data['address-id'])){
+         return redirect()->back()->with("error_message","please select or add address");
+      }
+
+      //check payment method
+      if(empty($data['paymentMethod'])){
+         return redirect()->back()->with("error_message","please select payment method");
+      }
+       
+      if(empty($data['accept'])){
+         return redirect()->back()->with("error_message","please agree T&C");
+      }
+       
+       //adrress
+       $address=DeliveryAddress::where("id",$data['address-id'])->first()->toArray();
+
+     
+
+       ///total 
+       $cart=new Cart();
+       $total= $cart->total();
+
+ 
+       DB::beginTransaction();
+      // create order 
+      $order=new Order();
+      $order->user_id =$address["user_id"];
+
+      $order->address = $address["address"];
+      $order->city = $address["city"];
+      $order->state = $address["state"];
+      $order->country = $address["country"];
+      $order->pincode = $address["pincode"];
+      $order->mobile = $address["mobile"];
+      $order->email = $address["email"];
+      $order->name = $address["name"];
+
+      $order->shippen_charges = 0;
+      $order->payment_method = $data["paymentMethod"];
+      $order->payment_gateway = $data["paymentMethod"];
+      $order->status = "pending";
+      $order->total =  $total;
+       
+      $order->save();
+      //dd($order);
+      // create orderprodct
+      $order_id=DB::getPdo()->lastInsertId();
+      $cartItems=Cart::getCartItems();
+      foreach($cartItems as $cartItem){
+         $orderProduct=new OrdersProduct();
+         $orderProduct->order_id=$order_id;
+         $orderProduct->product_id=$cartItem["product_id"];
+         $orderProduct->user_id=$cartItem["user_id"];
+
+         //////////////////////////////////////////
+          
+         $orderProduct->vendor_id=$order_id;     //
+         $orderProduct->product_name="name";     //
+         $orderProduct->admin_id=$order_id;      //
+         $orderProduct->product_code=$order_id;  //
+         $orderProduct->product_color=$order_id; //
+         $orderProduct->product_size=$order_id;  //
+         $orderProduct->product_price=$order_id; //
+         $orderProduct->product_qty=$order_id; 
+         $orderProduct->save();  //
+         
+
+      }
+
+      
+      DB::commit();
+       
+       // payment method
+       if($data["payment_gateway"]=="COD"){
+         //send order email
+     
+      $email=$address["email"];
+      $name = $address["name"];
+      $mobile = $address["mobile"];
+      $messageData=
+      [
+         "name"=>$name,
+         "email"=>$email,
+         "phone"=>$mobile ,
+         "order"=>$order ,
+      ];
+
+      Mail::send("emails.user.new-order",$messageData,function($message)use($email){
+         $message->to($email)->subject(" put new password for your account");
+        });
+
+      }elseif($data["payment_gateway"]=="paypal"){
+        return redirect("/paypal");
+
+      }
+     
+
+
+   
+    
+   return view("front.cart.checkout",compact("addresses"));
+
+   }else{
+
+      return view("front.cart.checkout",compact("addresses"));
+   }// end if ismethod
+ 
+ 
+}// end checkout function
+
+
+
+
+
+
 
 
 }// end class

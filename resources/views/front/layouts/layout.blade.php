@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang=" LaravelLocalization::getCurrentLocale()" dir="LaravelLocalization::getCurrentLocaleDirection()">
 <head>
 <!-- Meta -->
 <meta charset="utf-8">
@@ -12,8 +12,11 @@
 <title>Flipmart premium HTML5 & CSS3 Template</title>
 
 <!-- Bootstrap Core CSS -->
+ @if( LaravelLocalization::getCurrentLocaleDirection()=="rtl")
+ <link rel="stylesheet" href="{{asset('front/css/bootstrap.rtl.min.css')}}">
+@else
 <link rel="stylesheet" href="{{asset('front/css/bootstrap.min.css')}}">
-
+@endif
 <!-- Customizable CSS -->
 <link rel="stylesheet" href="{{asset('front/css/main.css')}}">
 <link rel="stylesheet" href="{{asset('front/css/blue.css')}}">
@@ -46,10 +49,10 @@
               
             <li><a href="{{route('userAccount',Auth::id())}}"><i class="icon fa fa-user"></i>My Account</a></li>
               @endif
-            <li><a href="#"><i class="icon fa fa-heart"></i>Wishlist</a></li>
-            <li><a href="#"><i class="icon fa fa-shopping-cart"></i>My Cart</a></li>
-            <li><a href="#"><i class="icon fa fa-check"></i>Checkout</a></li>
-            <li><a href="{{url('user/register-login')}}"><i class="icon fa fa-lock"></i>Register-Login</a></li>
+            <li><a href="#"><i class="icon fa fa-heart"></i>{{__("wishlist")}}</a></li>
+            <li><a href="{{url('cart/show')}}"><i class="icon fa fa-shopping-cart"></i> {{__("cart")}}</a></li>
+            <li><a href="{{url('cart/checkout')}}"><i class="icon fa fa-check"></i>{{__("checkout")}}</a></li>
+            <li><a href="{{url('user/register-login')}}"><i class="icon fa fa-lock"></i>{{__("register-login")}}</a></li>
           </ul>
         </div>
         <!-- /.cnt-account -->
@@ -65,9 +68,14 @@
             </li>
             <li class="dropdown dropdown-small"> <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown"><span class="value">English </span><b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="#">English</a></li>
-                <li><a href="#">French</a></li>
-                <li><a href="#">German</a></li>
+                 
+              @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
+            <li>
+            <a rel="alternate" hreflang="{{ $localeCode }}" href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
+                {{ $properties['native'] }}
+            </a>
+           </li>
+           @endforeach
               </ul>
             </li>
           </ul>

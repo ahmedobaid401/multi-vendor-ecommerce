@@ -147,17 +147,4 @@ public function confirm_vendor($email){
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

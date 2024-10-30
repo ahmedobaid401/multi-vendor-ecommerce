@@ -31,6 +31,21 @@ public function cartItemsCollect(){
   return $cartcollect;
 }
 
+public static function countItems(){
+
+  if(Auth::check()){
+    $column="user_id";
+    $value=Auth::id();
+  }else{
+    $column="session_id";
+    $value=Session::get("session_id");
+
+  }
+  $cartItems=Cart::where($column,$value)->sum("quantity");
+  return $cartItems ;
+
+}
+
 public function products (){
     return $this->belongsTo(Product::class, "product_id");
 }

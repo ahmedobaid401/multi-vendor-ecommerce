@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\ProductsFilter;
 use App\Models\ProductAttribute;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
@@ -414,45 +415,49 @@ public function listing(Request $request){
 
 
   //$url=$request->route()->uri(); 
- $url= Route::getFacadeRoot()->current()->uri();
+ //$url= Route::getFacadeRoot()->current()->uri();
+ $url=request()->segment(2);
  $categorCount=Category::where("url",$url)->where("status",1)->count();
+ //dd($url);
  if($categorCount > 0){
   $categoryDetails=Category::get_details($url);
+ // dd($categoryDetails);
   if($categoryDetails['parent_id']==0){
-     
+    
     $breadCrumb= "<li class='active'> <a href='".url($categoryDetails["url"])."' >".$categoryDetails["category_name"]." </a></li>";
                   
   }else{
-   $mainCat= Category::select("category_name","url")->where("id",$categoryDetails['parent_id'])->first()->toArray();
+   $mainCat= Category::select("category_name","url")->where("categories.id",$categoryDetails['parent_id'])->first()->toArray();
     
     $breadCrumb= "<li> <a href='".url($mainCat["url"])."' >".$mainCat["category_name"]."</a></li>
                   <li class='active'> <a href='".url($categoryDetails["url"])."' >".$categoryDetails["category_name"]." </a></li>" ;        
   }
  
- 
+  
 $categoryproducts=Product::with(["brand:id,name","attributes","images"=>function($builder){
 $builder->select("id","product_id","image","color","is_orginal_image")->where("is_orginal_image","yes");
 }])->whereIn("category_id",$categoryDetails['cat_ids'])->where("status",1);
 
- ;
+
+
+
+//dd("data['filter']");
  // ajax_filter_sort
 if($request->ajax()){
-
-
+  
   $data=$request->all();
-   
- 
+  
 // checking for filters
-
 if(isset($data['filter'] ) && !empty($data['filter'] )){
   $filters_array=[];
-  
+ 
  foreach($data["filter"] as $key=>$value){
  
   
     $filter= explode("-",$value);
     $filters_array[]=$filter;    
- }
+ }/// end foreach
+ 
  $categoryproducts->where(function($query) use($filters_array){
          foreach($filters_array as $filt){
 
@@ -461,6 +466,8 @@ if(isset($data['filter'] ) && !empty($data['filter'] )){
          }
  });
 }// end filter checking
+ 
+
 
 // check size
 if(isset($data["sizes"]) && !empty($data["sizes"])){
@@ -468,7 +475,6 @@ if(isset($data["sizes"]) && !empty($data["sizes"])){
  $productId=ProductAttribute::select("product_id")->whereIn("size",$data["sizes"])->get()->pluck("product_id")->toArray();
   
  $categoryproducts->whereIn("id",$productId);
-
 
 }
 // end chek size 
@@ -481,7 +487,7 @@ if(isset($data["colors"]) && !empty($data["colors"])){
   $categoryproducts->whereIn("id",$productIds);
  
  }
- // end chek colors 
+ // end check colors 
 
 // check brand
 if(isset($data["brand"]) && !empty($data["brand"])){
@@ -496,7 +502,7 @@ if(isset($data["brand"]) && !empty($data["brand"])){
   $productId=[];
 
  foreach($data["price"] as $key=>$price){
-     $priceArr=explode("-",$price);
+     $priceArr=explode("-", $price);
      $productId[]=Product::select("id")->whereBetween("product_price",[$priceArr[0],$priceArr[1]])->get()->pluck("id")->toArray();
  }
 
@@ -506,7 +512,10 @@ if(isset($data["brand"]) && !empty($data["brand"])){
    
   
   }
-  //// end check price
+//// end check price
+
+
+
 
 /// check sort
    $_GET['sort']=$data['sort'];
@@ -533,11 +542,11 @@ if(isset($_GET['sort']) && !empty($_GET['sort']) ){
  
 return view("front.products.ajax_products_filter",compact("categoryproducts","categoryDetails","url"));
  }// end if ajax
-
+ 
 $categoryproducts =$categoryproducts->paginate(8);
  
 $sections=Section::sections();
-//dd($categoryproducts);
+ 
    return view("front.products.List",compact("sections","categoryproducts","categoryDetails","breadCrumb","url"));
  }else{
   abort(404);

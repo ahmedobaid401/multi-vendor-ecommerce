@@ -1,7 +1,48 @@
 
 @extends('front.layouts.layout')
 @section('content')
- 
+ <style> 
+	*{
+    margin: 0;
+    padding: 0;
+}
+.rate {
+    float: left;
+    height: 46px;
+    padding: 0 10px;
+}
+.rate:not(:checked) > input {
+    position:absolute;
+    top:-9999px;
+}
+.rate:not(:checked) > label {
+    float:right;
+    width:1em;
+    overflow:hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    font-size:30px;
+    color:#ccc;
+}
+.rate:not(:checked) > label:before {
+    content: '★ ';
+}
+.rate > input:checked ~ label {
+    color: #ffc700;    
+}
+.rate:not(:checked) > label:hover,
+.rate:not(:checked) > label:hover ~ label {
+    color: #deb217;  
+}
+.rate > input:checked + label:hover,
+.rate > input:checked + label:hover ~ label,
+.rate > input:checked ~ label:hover,
+.rate > input:checked ~ label:hover ~ label,
+.rate > label:hover ~ input:checked ~ label {
+    color: #c59b08;
+}
+
+ </style>
     
       <!-- ===== ======== HEADER : END ============================================== -->
 <div class="breadcrumb">
@@ -548,64 +589,27 @@
 										
 										<div class="product-add-review">
 											<h4 class="title">Write your own review</h4>
-											<div class="review-table">
-												<div class="table-responsive">
-													<table class="table">	
-														<thead>
-															<tr>
-																<th class="cell-label">&nbsp;</th>
-																<th>1 star</th>
-																<th>2 stars</th>
-																<th>3 stars</th>
-																<th>4 stars</th>
-																<th>5 stars</th>
-															</tr>
-														</thead>	
-														<tbody>
-															<tr>
-																<td class="cell-label">Quality</td>
-																<td><input type="radio" name="quality" class="radio" value="1"></td>
-																<td><input type="radio" name="quality" class="radio" value="2"></td>
-																<td><input type="radio" name="quality" class="radio" value="3"></td>
-																<td><input type="radio" name="quality" class="radio" value="4"></td>
-																<td><input type="radio" name="quality" class="radio" value="5"></td>
-															</tr>
-															<tr>
-																<td class="cell-label">Price</td>
-																<td><input type="radio" name="quality" class="radio" value="1"></td>
-																<td><input type="radio" name="quality" class="radio" value="2"></td>
-																<td><input type="radio" name="quality" class="radio" value="3"></td>
-																<td><input type="radio" name="quality" class="radio" value="4"></td>
-																<td><input type="radio" name="quality" class="radio" value="5"></td>
-															</tr>
-															<tr>
-																<td class="cell-label">Value</td>
-																<td><input type="radio" name="quality" class="radio" value="1"></td>
-																<td><input type="radio" name="quality" class="radio" value="2"></td>
-																<td><input type="radio" name="quality" class="radio" value="3"></td>
-																<td><input type="radio" name="quality" class="radio" value="4"></td>
-																<td><input type="radio" name="quality" class="radio" value="5"></td>
-															</tr>
-														</tbody>
-													</table><!-- /.table .table-bordered -->
-												</div><!-- /.table-responsive -->
-											</div><!-- /.review-table -->
+											<form method="post" action="{{url('add-rating')}}" class="cnt-form">
+												@csrf
+											<div class="rate">
+													<input type="radio" id="star5" name="rate" value="5" />
+													<label for="star5" title="text">5 stars</label>
+													<input type="radio" id="star4" name="rate" value="4" />
+													<label for="star4" title="text">4 stars</label>
+													<input type="radio" id="star3" name="rate" value="3" />
+													<label for="star3" title="text">3 stars</label>
+													<input type="radio" id="star2" name="rate" value="2" />
+													<label for="star2" title="text">2 stars</label>
+													<input type="radio" id="star1" name="rate" value="1" />
+													<label for="star1" title="text">1 star</label>
+											    </div><br><br> <br><br>
 											
 											<div class="review-form">
 												<div class="form-container">
-													<form role="form" class="cnt-form">
-														
+													
+													
 														<div class="row">
-															<div class="col-sm-6">
-																<div class="form-group">
-																	<label for="exampleInputName">Your Name <span class="astk">*</span></label>
-																	<input type="text" class="form-control txt" id="exampleInputName" placeholder="">
-																</div><!-- /.form-group -->
-																<div class="form-group">
-																	<label for="exampleInputSummary">Summary <span class="astk">*</span></label>
-																	<input type="text" class="form-control txt" id="exampleInputSummary" placeholder="">
-																</div><!-- /.form-group -->
-															</div>
+															 
 
 															<div class="col-md-6">
 																<div class="form-group">
@@ -627,7 +631,21 @@
 										
 							        </div><!-- /.product-tab -->
 								</div><!-- /.tab-pane -->
+                                   <div>
+                                      <?php  
+									  $count=0; 
+                                        while($count<6){
+											
+											
+                                       ?>
 
+                                      <span style="color: gold;">&#9733;</span>
+                                     <?php 
+									  $count++; 
+									}
+										 
+                                       ?>
+								   </div>
 								<div id="tags" class="tab-pane">
 									<div class="product-tag">
 										
