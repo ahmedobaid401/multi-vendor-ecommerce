@@ -12,6 +12,7 @@ use App\Models\DeliveryAddress;
 use App\Models\ProductAttribute;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Notifications\orderNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -248,10 +249,17 @@ public function checkout(Request $request){
       
       DB::commit();
        
+      // send real time notification to the user
+      $user=Auth::user();
+      
+       
+     // dd($user);
+     $user->notify(new orderNotification($orderProduct)); 
+       
        // payment method
-       if($data["payment_gateway"]=="COD"){
-         //send order email
-     
+  if($data["paymentMethod"]=="COD"){
+
+      //send order email
       $email=$address["email"];
       $name = $address["name"];
       $mobile = $address["mobile"];
@@ -267,15 +275,11 @@ public function checkout(Request $request){
          $message->to($email)->subject(" put new password for your account");
         });
 
-      }elseif($data["payment_gateway"]=="paypal"){
+      }elseif($data["paymentMethod"]=="paypal"){
         return redirect("/paypal");
 
       }
      
-
-
-   
-    
    return view("front.cart.checkout",compact("addresses"));
 
    }else{

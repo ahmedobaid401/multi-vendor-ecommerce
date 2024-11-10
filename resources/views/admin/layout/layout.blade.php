@@ -73,6 +73,24 @@
   <!-- check admin current password -->
   <script> var csrf = "{{csrf_token()}}"  ;   </script>
 <script src="{{asset('admin/custom.js')}}"> </script>
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+
+<script>
+
+    // Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher('15d9e37a5f190c0bdf05', {
+      cluster: 'eu',
+    authEndpoint: "/ecom9/public/broadcasting/auth"
+    
+    });
+
+    var channel = pusher.subscribe('private-App.Models.User.{{Auth::id()}}');
+    channel.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', function(data) {
+     alert("hi ahmed.. new order has created");
+    });
+  </script>
 
 </body>
 

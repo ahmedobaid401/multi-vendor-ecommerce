@@ -1,5 +1,5 @@
 <?php
-
+  
 use App\sms\SmsSend;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -20,17 +20,16 @@ use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\admin\CategoryController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
- 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-
+//dd("weeeeeff");
 //require  __DIR__.'/auth.php';
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+//Route::get('/dashboard', function () {
+  //  return view('dashboard');
+//})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -38,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware("guest")->prefix("admin")->match(['get','post'],'/login', [AdminController::class, 'login'])->name('admin.login');
+Route::middleware("guest:admin")->prefix("admin")->match(['get','post'],'/login', [AdminController::class, 'login'])->name('admin.login');
 
 Route::middleware("admin")->prefix("admin")->group(function () {
      
@@ -120,16 +119,17 @@ Route::get("filterValue/delete/{id}",[FilterController::class,"delete"]);
 
 
  /////////////    front end    ////////////
+
  Route::group([
     'prefix' => LaravelLocalization::setLocale(),
     'middleware' => ['localeSessionRedirect','localizationRedirect',  'localeViewPath']
 ], 
 function()
  {
-   // dd(url()->current());
- Route::get("/",[FrontController::class,"index"]);
+   //dd(url()->current());
  
-
+ 
+   Route::get("/",[FrontController::class,"index"]);
  $categories=Category::select("url")->where("status",1)->get()->pluck("url")->toArray();
 
  foreach($categories as $key=>$url){
@@ -137,7 +137,7 @@ function()
      
  }
 
- // lang
+ 
    
 
 // vendors
