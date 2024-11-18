@@ -9,7 +9,7 @@ use App\Models\Section;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-
+use AmrShawky\LaravelCurrency\Facade\Currency;
 
 
 
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Mail;
 class FrontController extends Controller
 {
  public function index(){
-
+  
    $sections=Section::sections();
    $bestsellers=Product::select("id","product_name","product_price","product_image")->where("is_bestseller","yes")
    ->where("status",1)->limit(8)->inRandomOrder()->get()->toArray();

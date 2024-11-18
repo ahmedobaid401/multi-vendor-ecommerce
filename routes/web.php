@@ -5,6 +5,9 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Middleware\Admin;
 use App\Models\DeliveryAddress;
+ 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\front\CartController;
@@ -18,18 +21,21 @@ use App\Http\Controllers\front\PaypalController;
 use App\Http\Controllers\front\VendorController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\Admin\SectionController;
+use App\Http\Controllers\front\currencyConverter;
 use App\Http\Controllers\admin\CategoryController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-//dd("weeeeeff");
+use App\Http\Controllers\front\currencyController;
+
+//dd(Cache::get("caheRate"));
 //require  __DIR__.'/auth.php';
 Route::get('/', function () {
     return view('welcome');
 });
 
-//Route::get('/dashboard', function () {
-  //  return view('dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -202,6 +208,9 @@ Route::get("user/forget-password",[UserController::class,"forgetPassword"]);
 Route::post("user/new-password",[UserController::class,"newPassword"]);
 Route::post("user/put-new-password",[UserController::class,"putNewPassword"]);
 Route::get("user/new-password-form/{code}",[UserController::class,"NewPasswordForm"]);
+
+// currency converter
+Route::get("currencyConverter/{currency_to}",[currencyController::class,"currencyConverter"]);
 
 
 });

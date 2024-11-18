@@ -3,15 +3,17 @@
 namespace App\Models;
 
 use App\Models\Brand;
+use App\traits\i18ns;
 use App\Models\Vendor;
 use App\Models\Section;
 use App\Models\Category;
 use App\Models\ProductImage;
 use App\Models\ProductAttribute;
-use App\traits\i18ns;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -60,9 +62,9 @@ public function images(){
 public static function getDiscountPrice($product_id, $size=null){
 $locale=App::currentLocale();
 if($locale !=="en"){
-$id="products.id";
+  $id="products.id";
 }else{
-$id="id";
+  $id="id";
 
 }
 //dd($product_id);
@@ -72,31 +74,49 @@ $id="id";
 
     $proDetails=json_decode(json_encode($proDetails),true);
   
-//dd( $proDetails);
+ 
    $catDetails=Category::select("id","category_discount")->where("categories.id",$proDetails["category_id"])->first();
    $catDetails=json_decode(json_encode($catDetails),true);
+
+
+   // for currency
+   $baseCurrency=config("app.currency");
+     $currency= Session::get("currency_code",$baseCurrency);
+     $rate=1;
+     if($baseCurrency!=$currency){
+      $rate=Cache::get("rate".$currency,1);
+     }
+
+   // end for currency
+
+
 if($size!==null){
    
   $product_price=$proDetails['attributes'][0]['price'];
   $attribute_price=$proDetails['attributes'][0]['price'];
 }else{
-  $product_price=$proDetails['product_price'];
+  $product_price=$proDetails['product_price'] ;
   $attribute_price= 0;
   
 }
 
  if($proDetails["product_discount"]  >0){
   $discount_price= $product_price - ($product_price * $proDetails["product_discount"]/100);
-   
+
  }elseif($catDetails["category_discount"] >0){
   $discount_price=  $product_price - ($product_price * $catDetails["category_discount"]/100);
    
-
  }else{
   $discount_price=0;
 
  }
- 
+
+  // for currency
+  $discount_price= $discount_price  * $rate ;
+
+  $attribute_price= $attribute_price  * $rate ;
+  $product_price= $product_price  * $rate ;
+   
    return [
            "discount_price"=>$discount_price ,
            "product_price"=>$product_price,

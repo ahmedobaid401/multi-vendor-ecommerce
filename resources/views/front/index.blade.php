@@ -1163,7 +1163,7 @@
                     <div class="description"></div>
                     <div class="product-price"> 
                     <?php 
-                    //dd($featuredProduct['id'],"kkkkkkkkkkkk");
+                 
                      $getDiscountPrice = App\Models\Product::getDiscountPrice($featuredProduct['id']);
                       ?>
                             @if($getDiscountPrice['discount_price'] >0)

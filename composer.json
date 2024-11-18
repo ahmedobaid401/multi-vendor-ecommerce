@@ -6,7 +6,9 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
+        "amrshawky/laravel-currency": "^6.0",
         "fruitcake/laravel-cors": "^2.0.5",
+        "geoip2/geoip2": "*",
         "guzzlehttp/guzzle": "^7.8",
         "inertiajs/inertia-laravel": "^0.6.8",
         "laravel/framework": "^9.0",
@@ -17,6 +19,7 @@
         "pusher/pusher-php-server": "^7.2",
         "spatie/image": "^2.2",
         "tightenco/ziggy": "^1.0",
+        "torann/geoip": "*",
         "vonage/client": "^4.0"
     },
     "require-dev": {
@@ -35,7 +38,9 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         },
+
         "files":["App/helpers/myHelper.php"]
+        
     },
     "autoload-dev": {
         "psr-4": {
