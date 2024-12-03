@@ -192,7 +192,7 @@
 
                     <div class="d-block my-3">
                         <div class="custom-control custom-radio">
-                            <input id="credit" name="paymentMethod" value="cash-on-delivery" type="radio" class="custom-control-input" checked required>
+                            <input id="credit" name="paymentMethod" value="cod" type="radio" class="custom-control-input" checked required>
                             <label class="custom-control-label" for="credit">cash on delivery</label>
                         </div>
                        

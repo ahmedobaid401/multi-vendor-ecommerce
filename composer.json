@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.7",
         "laravel/vonage-notification-channel": "^3.3",
         "mcamara/laravel-localization": "^2.0",
+        "paypal/paypal-checkout-sdk": "^1.0",
         "pusher/pusher-php-server": "^7.2",
         "spatie/image": "^2.2",
         "tightenco/ziggy": "^1.0",

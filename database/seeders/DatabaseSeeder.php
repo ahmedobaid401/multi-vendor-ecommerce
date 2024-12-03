@@ -30,7 +30,8 @@ class DatabaseSeeder extends Seeder
        //\App\Models\Product::factory(25)->create();
        // $this->call(productAttributeSeeder::class);
        // $this->call(FilterTableSeeder::class);
-        $this->call(FilterValueTableSeeder::class);
+        //$this->call(FilterValueTableSeeder::class);
+        $this->call(paymentmethodSeeder::class);
 
  
 

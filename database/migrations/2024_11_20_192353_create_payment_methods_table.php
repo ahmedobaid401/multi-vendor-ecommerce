@@ -13,13 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('products_i18ns', function (Blueprint $table) {
+        Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("product_id")->constraind("products")->cascadeOnDelete();
-            $table->string("locale",2);
             $table->string("name");
-            $table->text("description")->nullable();
-            $table->primary(["product_id","locale"]);
+            $table->string("description")->nullable();
+            $table->string("icon")->nullable();
+            $table->string("slug")->unique();
+            $table->enum("status",["active","inactive"]);
+            $table->json("options")->nullable();
+            $table->timestamps();
         });
     }
 
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('products_i18ns');
+        Schema::dropIfExists('payment_methods');
     }
 };

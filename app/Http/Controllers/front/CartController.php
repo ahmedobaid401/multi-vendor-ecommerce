@@ -8,14 +8,16 @@ use App\Models\Order;
 use App\Models\Section;
 use Illuminate\Http\Request;
 use App\Models\OrdersProduct;
+use App\Models\PaymentMethod;
 use App\Models\DeliveryAddress;
 use App\Models\ProductAttribute;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Notifications\orderNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use App\Notifications\orderNotification;
+use App\PaymentGateways\PaymentGatewayFactory;
  
 
 class CartController extends Controller
@@ -164,12 +166,13 @@ public function updateTotal(Request $request){
 public function checkout(Request $request){
    
     $addresses=DeliveryAddress::deliveryAddresses();
-   // dd($addresses);
+  
    if($request->isMethod("post")){
-      //dd($addresses);
+      
       $data=$request->all();
-      //dd($data);
+       
       $countItems=Cart::countItems();
+
        // check if cart is empty
       if($countItems== 0) {
 
@@ -253,11 +256,15 @@ public function checkout(Request $request){
       $user=Auth::user();
       
        
-     // dd($user);
+      // realtime notification    l
      $user->notify(new orderNotification($orderProduct)); 
+
        
-       // payment method
-  if($data["paymentMethod"]=="COD"){
+       // Payment via payment method.
+       $gateway=PaymentGatewayFactory::create($data["paymentMethod"]);    
+       $gateway->create($order);
+       
+
 
       //send order email
       $email=$address["email"];
@@ -272,13 +279,10 @@ public function checkout(Request $request){
       ];
 
       Mail::send("emails.user.new-order",$messageData,function($message)use($email){
-         $message->to($email)->subject(" put new password for your account");
+         $message->to($email)->subject("your order on the way");
         });
 
-      }elseif($data["paymentMethod"]=="paypal"){
-        return redirect("/paypal");
-
-      }
+      
      
    return view("front.cart.checkout",compact("addresses"));
 
@@ -290,8 +294,13 @@ public function checkout(Request $request){
  
 }// end checkout function
 
+public function callback(Request $request , $slug)
+{
+  // veriyfy payment property.
+  $gateway=PaymentGatewayFactory::create($slug);    
+  $gateway->veriyfy($request->id);
 
-
+}
 
 
 

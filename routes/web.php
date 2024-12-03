@@ -23,6 +23,7 @@ use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\front\currencyConverter;
 use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\PaymentmethodsController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\front\currencyController;
@@ -114,8 +115,9 @@ Route::get("filters/values/",[FilterController::class,"filterValues"]);
 Route::match(["get","post"],"/filters/add-edit/{id?}",[FilterController::class,"addEdit"]); 
 Route::match(["get","post"],"/filters/add-edit-filterValue/{id?}",[FilterController::class,"addEditFilterValue"]); 
 Route::get("filterValue/delete/{id}",[FilterController::class,"delete"]);
-
-
+//dd("dddd");
+// payment methods
+ Route::resource("payment-methods",PaymentmethodsController::class);
 
  });
  ///// end admin 
@@ -124,7 +126,7 @@ Route::get("filterValue/delete/{id}",[FilterController::class,"delete"]);
 
 
 
- /////////////    front end    ////////////
+ /////////////    frontend    ////////////
 
  Route::group([
     'prefix' => LaravelLocalization::setLocale(),
@@ -171,6 +173,8 @@ Route::post("/cart/update-total",[CartController::class,"updateTotal"]);
 
 // checkout 
 Route::match(["get","post"],"cart/checkout",[CartController::class,"checkout"]);
+Route::any("payment/{slug}/return",[CartController::class,"callback"])->name("payment.return");
+Route::any("payment/{slug}/cancel",[CartController::class,"cancel"])->name("payment.cancel");
 Route::post("cart/check/address",function(){
     $addresses=DeliveryAddress::deliveryAddresses();
     if($addresses){
@@ -183,7 +187,9 @@ Route::post("cart/check/address",function(){
 });
 
 // paypal
-Route::get("/paypal",[PaypalController::class,"payPal"]);
+//Route::get("/paypal",[PaypalController::class,"payPal"]);
+Route::any("payment/cancel",[PaypalController::class,"cancel"])->name("payment.cancel");
+Route::any("payment/return",[PaypalController::class,"return"])->name("payment.return");
 
 // rating
 Route::post("add-rating",function(Request $request){
