@@ -124,7 +124,10 @@ if($request->hasFile("product_video")){
 ///////////////////////  edit product  //////////////////////
 public function edit(Request $request,$id){
 
-  $product=Product::where("id",$id)->first()->toArray();
+  //$product=Product::get( )->toArray() ;
+//dd($product);
+
+  $product=Product::where("products.id",$id)->first()->toArray();
   $sections=Section::with("categories")->get()->toArray();   
   $brands=Brand::all()->toArray();
   $filters=ProductsFilter::filter_available($product['category_id']);

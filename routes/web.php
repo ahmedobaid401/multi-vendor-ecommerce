@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\front\CartController;
 use App\Http\Controllers\front\UserController;
 use App\Http\Controllers\admin\AdminController;
@@ -23,10 +24,10 @@ use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\front\currencyConverter;
 use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\front\currencyController;
 use App\Http\Controllers\admin\PaymentmethodsController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\front\currencyController;
 
 //dd(Cache::get("caheRate"));
 //require  __DIR__.'/auth.php';
@@ -115,11 +116,22 @@ Route::get("filters/values/",[FilterController::class,"filterValues"]);
 Route::match(["get","post"],"/filters/add-edit/{id?}",[FilterController::class,"addEdit"]); 
 Route::match(["get","post"],"/filters/add-edit-filterValue/{id?}",[FilterController::class,"addEditFilterValue"]); 
 Route::get("filterValue/delete/{id}",[FilterController::class,"delete"]);
-//dd("dddd");
+ 
 // payment methods
  Route::resource("payment-methods",PaymentmethodsController::class);
 
+
+// role and abilities
+Route::get("roles/index",[RoleController::class,"index"]);
+Route::get("role/create",[RoleController::class,"create"]); 
+Route::post("role/store",[RoleController::class,"store"]); 
+Route::get("role/edit/{id}",[RoleController::class,"edit"]); 
+Route::post("role/update/{role}",[RoleController::class,"update"]); 
+Route::get("role/delete/{id}",[RoleController::class,"delete"]);
  });
+ 
+
+
  ///// end admin 
 
 
@@ -134,12 +146,10 @@ Route::get("filterValue/delete/{id}",[FilterController::class,"delete"]);
 ], 
 function()
  {
-   //dd(url()->current());
- 
- 
-   Route::get("/",[FrontController::class,"index"]);
- $categories=Category::select("url")->where("status",1)->get()->pluck("url")->toArray();
+    
+Route::get("/",[FrontController::class,"index"]);
 
+ $categories=Category::select("url")->where("status",1)->get()->pluck("url")->toArray();
  foreach($categories as $key=>$url){
    Route::match(["post","get"],"/".$url ,[ProductController::class,"listing"]);
      
@@ -202,6 +212,10 @@ Route::get("user/register-login",[UserController::class,"register_login"])->name
 Route::post("user/store",[UserController::class,"store"]);
 Route::post("user/login",[UserController::class,"userLogin"]);
 Route::get("user/confirm/{code}",[UserController::class,"confirmAccount"]);
+
+// social login 
+Route::get("auth/{driver}/redirect",[UserController::class,"redirect"]);
+Route::get("auth/{driver}/callback",[UserController::class,"callback"]);
 
 Route::middleware("auth")->group(function () {
 Route::get("user/account/{id}",[UserController::class,"userAccount"])->name("userAccount");

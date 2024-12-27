@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use App\concerns\hasRoles;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\foundation\Auth\user;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Admin extends User
+class Admin extends Authenticatable
 {
-    use HasFactory ,HasApiTokens, Notifiable;
+    use HasFactory ,HasApiTokens, Notifiable ,hasRoles;
     protected $guard = 'admin';
 
     protected $guarded = ['created_at','updated_at'];

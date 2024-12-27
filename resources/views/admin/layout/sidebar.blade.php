@@ -71,6 +71,8 @@
                 <li class="nav-item"@if (activSidebar(2,"products")) style='background:#2e2c7f;'  @endif  ><a class="nav-link" href="{{url('admin/products/index')}}">products</a></li>
                 <li class="nav-item"@if (activSidebar(2,"sliders")) style='background:#2e2c7f;'  @endif  ><a class="nav-link" href="{{url('admin/sliders/index')}}">sliders</a></li>
                 <li class="nav-item"@if (activSidebar(2,"filters")) style='background:#2e2c7f;'  @endif  ><a class="nav-link" href="{{url('admin/filters/index')}}">products filter</a></li>
+                <li class="nav-item"@if (activSidebar(2,"roles")) style='background:#2e2c7f;'  @endif  ><a class="nav-link" href="{{url('admin/roles/index')}}">roles</a></li>
+
                @endif
 
                 

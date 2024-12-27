@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\concerns\hasRoles;
 use App\Models\UserAddress;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -12,7 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable , hasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -43,6 +45,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function setProviderTokenAttribute($value){
+        $this->attributes["provider_token"]=Crypt::encrypt($value);
+    }
+
+    public function getProviderTokenAttribute($value){
+        return Crypt::decrypt($value);
+    }
 
 
 

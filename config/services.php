@@ -32,6 +32,11 @@ return [
     "vonage"=>[
        "VONAGE_SMS_FROM"=>"15556666666",
     ],
+    "google"=>[
+       "client_id"=>env("CLIENT_GOOGLE_ID"),
+       "client_secret"=>env("CLIENT_GOOGLE_SECRET"),
+       "redirect"=>env("APP_URL")."/ecom9/public/auth/google/callback",
+    ],
 
 'service' => 'maxmind_database',
 ];

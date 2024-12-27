@@ -40,9 +40,9 @@ class BrandController extends Controller
                   $title="Add Brand";          
                   return view("admin.brands.addEdit",compact("brand","title"));       
            }else{
-              $brand= Brand::where("id",$id)->first();
+            $brand= Brand::where("id",$id)->first(); 
              if($request->isMethod("post")){ 
-                         
+                     
                 $brand->update($request->all());
                 return redirect("admin/brands/index")->with("success","Brand has been updated successfully");
                }

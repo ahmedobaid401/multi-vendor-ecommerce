@@ -6,16 +6,22 @@ use App\Models\Section;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
+ ;
+ 
 
 class CategoryController extends Controller
 {
     public function index(){
+          
+      ///// authorization 
+      if(! Gate::allows("brands.view")){
+        abort(403);
+      }
 
+      ///////
         $categories=Category::with("section","parent")->get()->toArray();
          
-          // dd($categories);
-        
-        
         return view("admin.categories.index",compact("categories"));
 
     }/////// end idex 

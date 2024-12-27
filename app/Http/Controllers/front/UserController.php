@@ -8,14 +8,18 @@ use App\Models\User;
 use App\sms\SmsSend;
 use App\Models\Section;
 use App\Models\UserAddress;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use PhpParser\Node\Stmt\Return_;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Validator;
+
 
 class UserController extends Controller
 {
@@ -345,6 +349,44 @@ public function NewPasswordForm($code)  {
   $email=base64_decode($code);
   return view("front.users.new-password-form",compact("email","sections"));
 }
+
+ 
+// social login
+public function redirect($driver){
+  return Socialite::driver($driver)->redirect();
+}
+
+public function callback($driver){
+
+  try{
+  $provider_user= Socialite::driver($driver)->user();
+
+  $user=User::where("provider",$driver)->where("provider_id",$provider_user->id)->first();
+
+
+  if(!$user){
+    $user=User::updateOrCeate([
+       "name"=>$provider_user->name,
+       "email"=>$provider_user->email,
+       "provider"=>$provider_user->name,
+       "provider_id"=>$provider_user->id,
+       "provider_token"=>$provider_user->token,
+       "password"=>Hash::make(Str::random(8)),
+    ]);
+  }
+    Auth::login($user);
+    
+   return redirect("/");
+  } catch(throwable $e){
+    return redirect("user/login")->withErrors([
+    "email"=>$e->getMessage(),
+    ]);
+
+  }
+  
+}
+
+
 
 
 
