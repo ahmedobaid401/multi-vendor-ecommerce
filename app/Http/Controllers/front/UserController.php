@@ -10,6 +10,7 @@ use App\Models\Section;
 use App\Models\UserAddress;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\DeliveryAddress;
 use Illuminate\Validation\Rule;
 use PhpParser\Node\Stmt\Return_;
 use App\Http\Controllers\Controller;
@@ -92,11 +93,13 @@ class UserController extends Controller
     
    // user login 
    public function userLogin(Request $request){
+    
       if($request->ajax()){
+        //dd("fffffffffff");
           $data=$request->all();
           $formData=$data['formData'];
           parse_str($formData,$data_result);
-         // dd($data_result['remember-me']);
+          
     
           // validation
           $validator=Validator::make($data_result,[
@@ -106,7 +109,7 @@ class UserController extends Controller
           ]);
             
           if($validator->passes()){
-               
+            
                if(Auth::attempt(["email"=>$data_result['email'],"password"=>$data_result['password']])){
 
               // if user accoıunt not activated
@@ -125,13 +128,14 @@ class UserController extends Controller
 
 
                 $redirect=url("/");
-                return response()->json(["type"=>"success","url"=> $redirect]);
+                return response()->json(["type"=>"success","redirect"=> $redirect]);
                }else{
                 return response()->json(["type"=>"incorrect","message"=>"email or password not correct"]);
 
                }
                 
           }else{
+           
             return response()->json(["type"=>"error","errors"=>$validator->messages()]);
           }
                     
@@ -139,16 +143,27 @@ class UserController extends Controller
         }
         }// end user login
 
-
+// user account
+public function userAccount($id){
+  $id=Auth::id();
+  if(!$id){
+    return back();
+  }
+   
+  $sections=[];
+  $user=User::with("address")->where("id",$id)->first()->toArray();
+  
+  return view("front.users.my-account",compact("user","sections"));
+}
 
     // update account 
     public function userAccountUpdate(Request $request){
       $data=$request->all();
-      //dd($data);
+     // dd($data);
       $id=Auth::id();
       $validator=Validator::make($data,[
-        "email"=>["required","email",Rule::unique("users")->ignore($id)],
-        "name"=>"string|max:100",
+        
+        //"name"=>"string|max:100",
         
         "phone"=>"required|numeric|digits:10",
         "pincode"=>"required|digits:6",
@@ -157,19 +172,17 @@ class UserController extends Controller
         "city"=>"required|string",
         "address"=>"required|string",
          
-      ],[
-        "email.unique"=>"email is already exists"
       ]);
 
       if($validator->passes()){
 
-        $userAddress=new UserAddress ; 
-        $userAddress->user_id= Auth::id();
+        $userAddress=UserAddress::where("user_id",$id)->first() ; 
+        $userAddress->user_id= $id;
         $userAddress->country=$data['country_code'];
         $userAddress->state=$data['state'];
         $userAddress->city=$data['city'];
-        $userAddress->email=$data['email'];
-        $userAddress->name=$data['name'];
+       // $userAddress->email=$data['email'];
+       // $userAddress->name=$data['name'];
         $userAddress->pincode=$data['pincode'];
         $userAddress->address=$data['address'];
         if( $userAddress->save()){
@@ -177,7 +190,7 @@ class UserController extends Controller
             return response()->json(["success"=>"details account has inserted successfully"]);
   
           }
-          return back()->with("success","details account has inserted successfully");
+          return redirect()->route("userAccount",$id)->with("success","details account has inserted successfully");
         }else{
           if($request->ajax()){
             return response()->json(["error"=>"insert prossess has failed"]);
@@ -210,18 +223,7 @@ class UserController extends Controller
     }
 
 
- // user account
- public function userAccount($id){
-  $id=Auth::id();
-  if(!$id){
-    return back();
-  }
-   
-  $sections=[];
-  $user=User::with("address")->where("id",$id)->first()->toArray();
-  
-  return view("front.users.my-account",compact("user","sections"));
-}
+ 
 
 // user account edit
 public function userAccountEdit(){
@@ -386,6 +388,66 @@ public function callback($driver){
   
 }
 
+
+//////// delivery address
+
+public function DeliveryAddressForm(){
+  $country=include(base_path("data/country.php"));
+  return view("front.users.delivery-address-form",compact("country"));
+}
+public function DeliveryAddressStore(Request $request){
+   
+  $data=$request->all();
+  // dd($data);
+   $id=Auth::id();
+   $validator=Validator::make($data,[
+     
+     "name"=>"required|string|max:80",
+     "mobile"=>"required|numeric|digits:10",
+     "email"=>"required|email",
+     "pincode"=>"required|digits:6",
+     "country_code"=>"required|max:2",
+     "state"=>"required|string",
+     "city"=>"required|string",
+     "address"=>"required|string",
+      
+   ]);
+
+   if($validator->passes()){
+      //$addresses=DeliveryAddress::deliveryAddresses();
+     $userAddress= new DeliveryAddress() ; 
+     $userAddress->user_id= $id;
+     $userAddress->country=$data['country_code'];
+     $userAddress->state=$data['state'];
+     $userAddress->city=$data['city'];
+     $userAddress->email=$data['email'];
+     $userAddress->name=$data['name'];
+     $userAddress->mobile=$data['mobile'];
+     $userAddress->pincode=$data['pincode'];
+     $userAddress->address=$data['address'];
+     if( $userAddress->save()){
+        if($request->ajax()){
+            return response()->json(["type"=>"success","address"=>$userAddress]);
+        }else{
+          return redirect()->route("userAccount",$id)->with("success","delivery address has been inserted successfully");
+        }
+     }else{
+        if($request->ajax()){
+          return response()->json(["type"=>"error"]);
+        }else{
+          return back()->with("error","  insert prossess has failed");
+        }
+     }
+   }else{
+     
+       return back()->withErrors($validator)->withInput();
+     }
+
+      
+      
+      
+ 
+  }// end delivery address
 
 
 

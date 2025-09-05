@@ -4,6 +4,7 @@
                 <div class="row">
                     @foreach($categoryproducts as $categoryproduct )
                     <?php 
+                    
                       $arr=array();
                               if(count($categoryproduct->attributes) > 0){
                                 
@@ -69,7 +70,20 @@
                        
                         <h6 > {{$categoryproduct['product_code']}}/{{$categoryproduct['brand']['name']}}/{{$categoryproduct['product_color']}}  </h6> 
                           <h3 class="name"><a href="{{url('product/'.$categoryproduct['id'].'/'.$size)}}"> {{$categoryproduct->product_name}} </a></h3> 
-                          <div class="rating rateit-small"></div>
+                          <div class=" ">
+                               @for($i=1; $i<=5; $i++)
+                                    @if($i <= floor($categoryproduct->avg_rating))
+                                        ⭐️
+                                       @elseif( $i - $categoryproduct->avg_rating < 1 )
+                                                                           
+                                        ⭐️ (half star emoji or SVG)
+                                        @else
+                                        ☆
+                                          
+                                     @endif
+
+                               @endfor
+                          </div>
                           <div class="description">{{$categoryproduct['description']}}</div>
                           <div class="product-price">
 

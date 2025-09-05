@@ -41,8 +41,8 @@
 	</div>
 	<p id="user-incorrect"> </p>
 	
-	<form id="loginForm" method="post"  class="register-form outer-top-xs" role="form">
-	@csrf
+	<form id="loginForm" action="{{route('user.login')}}"  method="post"  class="register-form outer-top-xs" role="form">
+	   @csrf
 		<div class="form-group">
 		    <label class="info-title" for="exampleInputEmail1">Email Address <span>*</span></label>
 		    <input type="email" name="email" class="form-control unicase-form-control text-input" >

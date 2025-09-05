@@ -4,10 +4,14 @@
  
 
  
-    <div class="container mt-5">
+    <div  class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
+                <div class="text-center">
+                            <a href="{{url('user/delivery-address')}}" class="btn btn-primary">add delivery-address</a>
+                            
+                        </div>
                     <div class="card-header text-center">
                         <h3>User Account Details</h3>
                     </div>

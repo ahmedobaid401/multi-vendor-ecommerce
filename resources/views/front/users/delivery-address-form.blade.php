@@ -12,7 +12,7 @@
 
                 <div class="card">
                     <div class="card-header text-center">
-                        <h3>User Account Details</h3>
+                        <h3>Add Delivery-Address</h3>
                     </div>
                     <div class="card-body">
                     @if($errors->any())
@@ -22,29 +22,36 @@
                           </div>
                         @endforeach
                    @endif
+                   @if(session("success"))
+                        
+                          <div class="alert alert-success">
+                            <span>{{session("success")}}</span>
+                          </div>
+                        
+                   @endif
                       <div class=" row"> 
                  
-                    <form action="{{url('user/account-update')}}" method="post">
+                    <form action="{{url('user/delivery-address/store')}}" method="post">
                         @csrf
                       <div class="col-md-6">
 
                         <div class="mb-6 row">
                             <label  class="col-sm-5">Username</label>
                             <div class="col-sm-5">
-                                <input type="text"  class="form-control mb-6" id="username" value="{{$user['name']}}">
+                                <input type="text" name="name" class="form-control mb-6" id="username" value=" ">
                             </div>
                         </div>
                         <div class="mb-6 row">
                             <label for="email" class="col-sm-5 col-form-label">Email</label>
                             <div class="col-sm-5">
-                                <input type="email" class="form-control mb-6" id="email" value="{{$user['email']}}">
+                                <input type="email" name="email" class="form-control mb-6" id="email" value=" ">
                                  
                             </div>
                         </div>
                         <div class="mb-6 row">
                             <label for="phone" class="col-sm-5 col-form-label">Phone Number</label>
                             <div class="col-sm-5">
-                                <input type="text" name="phone" class="form-control" id="phone" value="{{$user['phone']}}">
+                                <input type="text" name="mobile" class="form-control" id="phone" value=" ">
                             </div>
                         </div>
                         <div class="mb-6 row">
@@ -56,7 +63,7 @@
                                     @foreach($country as $country_code => $country_value)
                        
                                        <option type="text"   class="form-control"   value="{{$country_code}}"
-                                       @if(!empty($user['address']['country'])) @if($country_code == $user['address']['country']) selected  @endif @endif
+                                       
                                         placeholder="country">{{$country_value}} </option>
                                      @endforeach
                                  </select>
@@ -67,32 +74,32 @@
 
                         <div class="col-md-6">
                         <div class="mb-3 row">
-                            <label for="username" class="col-sm-4 ">state</label>
+                            <label for="" class="col-sm-4 ">state</label>
                             <div class="col-sm-6">
-                                <input type="text"  name="state" class="form-control" id="username" @if(!empty($user['address']['state'])) value="{{$user['address']['state']}}"@endif>
+                                <input type="text"  name="state" class="form-control" id="username"  >
                             </div>
                         </div>
                         <div class="m-3 row">
-                            <label for="email" class="col-sm-4 col-form-label">city</label>
+                            <label for="" class="col-sm-4 col-form-label">city</label>
                             <div class="col-sm-6">
-                                <input type="text" name="city" class="form-control" id="email" @if(!empty($user['address']['city'])) value="{{$user['address']['city']}}"@endif>
+                                <input type="text" name="city" class="form-control" id="email"   >
                             </div>
                         </div>
                         <div class="mb-3 row">
                             <label for="phone" class="col-sm-4 col-form-label">pincode </label>
                             <div class="col-sm-6">
-                                <input type="text" name="pincode"  class="form-control" id="phone" @if(!empty($user['address']['pincode'])) value="{{$user['address']['pincode']}}"@endif>
+                                <input type="text" name="pincode"  class="form-control" id="phone"     >
                             </div>
                         </div>
                         <div class="mb-6 row">
                             <label for="address" class="col-sm-4 col-form-label">Address</label>
                             <div class="col-sm-6">
-                                <input type="text" name="address" class="form-control" id="address" @if(!empty($user['address']['address'])) value="{{$user['address']['address']}}"@endif>
+                                <input type="text" name="address" class="form-control" id="address"    >
                             </div>
                         </div>
                             
                              <div class="text-center ">
-                                  <button  type="submit"class="btn btn-primary">update</button>   
+                                  <button  type="submit"class="btn btn-primary">Add Address</button>   
                               </div> 
                            
                      </div>

@@ -33,9 +33,9 @@ $("#sort").on("change",function(){
 //// end fun 
 
 
-     ///////////////// 
+     /////////////////////////////////////////// 
      $(".check-box").on("click",function(){
-
+      //console.log("dddddd");
          var brand=get_data("brand");
          var price=get_data("price");
          var sizes=get_data("size");
@@ -61,7 +61,7 @@ $("#sort").on("change",function(){
               $(".products_filter").html(data);
             },
             error:function(error){
-              alert(error)
+              alert("error");
             }
  
          });
@@ -244,7 +244,7 @@ $('#registerForm').submit(function(event){
   $(".load").show();
   event.preventDefault();
   var formData=$(this).serialize();
- //alert(formData);
+ alert("reg");
   $.ajax({
     url:"store",
     type:"post",
@@ -289,8 +289,9 @@ $('#loginForm').submit(function(event){
     type:"post",
     data:{formData:formData, _token:csrf},
     success:function(response){
+      console.log(response);
         if(response.type=="success"){
-         window.location.href=response.url;
+         window.location.href= response.redirect;
         }else if(response.type=="error"){
           $("#registerForm p").css({
             "display":"none"
@@ -310,7 +311,8 @@ $('#loginForm').submit(function(event){
           $("#user-incorrect").attr("style","color:red");
         }
     
-    },error:function(){
+    },
+    error:function(){
       alert("failed.try again");
     }
   
@@ -368,7 +370,7 @@ $('#loginForm').submit(function(event){
 // check address
 $('#check-address').on('submit', function (e) {
   e.preventDefault(); // Prevent the form from submitting immediately
-
+ 
   $.ajax({
       url: "check/address", // Route to check address
       method: "POST",
@@ -400,15 +402,18 @@ $('#add-address-form').on('submit', function (e) {
   e.preventDefault(); // Prevent the form from submitting immediately
 
   $.ajax({
-      url: "/user/account-update", // Route to check address
+      
+      url: "/ecom9/public/user/delivery-address/store",
       method: "POST",
-      data: {
-          _token: csrf, // CSRF token for security
-      },
+      data: $(this).serialize (),
+
+            // CSRF token for securit 
       success: function (response) {
-          if (response.success) {
-              
-              alert(success);
+          if (response.type=="success") {
+            let userAddress=response.address ;
+             $("#address-new").val(userAddress.id);
+               
+               
               
           } else {
             alert("error"); 
@@ -437,7 +442,9 @@ $('#add-address-form').on('submit', function (e) {
 
 
  
-  ///   ///    //// ////// //// ///// /// //// ///  //// ///   
+  ///   ///    //// ////// //// ///// /// //// ///  //// /// 
+  ///////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////  
   // get filter
 function get_filter(){
   var filter=[];

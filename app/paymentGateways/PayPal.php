@@ -9,6 +9,7 @@ use App\PaymentGateways\PaymentGateway;
 use Illuminate\Support\Facades\Redirect;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\Resources\Json\JsonResource;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
@@ -61,7 +62,7 @@ class PayPal implements PaymentGateway
             $response = $this->client()->execute($request);
 
             // create payment record
-             $payment=Payment::forceCreat([
+             $payment=Payment::forceCreate([
                 "payment_method_id"=>$this->paymentMethod->id,
                 "paymentable_id"=>$order->id,
                 "paymentable_type"=>get_class($order),
@@ -76,13 +77,19 @@ class PayPal implements PaymentGateway
             // If call returns body in response, you can get the deserialized version from the result attribute of the response
             foreach($response->result->links as $link){
                  if($link->rel=="approve"){
-                    return Redirect::away($link->href);
+                    return new JsonResource([
+                      "status"=>"succeed",
+                      "redirect"=>Redirect::away($link->href),
+
+                    ]) ;
                  }
             }
 
         } catch (\Exception $ex) {
-            echo $ex->statusCode;
-            print_r($ex->getMessage());
+             
+          return  new JsonResource([
+            "error"=>$ex->getMessage() ,
+          ]);
         }
     }
 
@@ -99,7 +106,7 @@ class PayPal implements PaymentGateway
            $payment->save(); 
            return $payment;            
          }
-       
+       return  new Payment();
             
      }
 

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('orders_products', function (Blueprint $table) {
             $table->id();
-            $table->integer("order_id");
+            $table->integer("order_id")->constrained()->onDelete("cascade");
             $table->integer("product_id");
             $table->integer("user_id");
             $table->integer("vendor_id");

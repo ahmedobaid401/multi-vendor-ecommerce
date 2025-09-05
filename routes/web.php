@@ -19,6 +19,7 @@ use App\Http\Controllers\front\FrontController;
 use App\Http\Controllers\admin\FilterController;
 use App\Http\Controllers\admin\SliderController;
 use App\Http\Controllers\front\PaypalController;
+use App\Http\Controllers\front\RatingController;
 use App\Http\Controllers\front\VendorController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\Admin\SectionController;
@@ -182,11 +183,13 @@ Route::post("/cart/delete",[CartController::class,"cartDelete"]);
 Route::post("/cart/update-total",[CartController::class,"updateTotal"]);
 
 // checkout 
+Route::middleware("auth")->group(function () {
 Route::match(["get","post"],"cart/checkout",[CartController::class,"checkout"]);
 Route::any("payment/{slug}/return",[CartController::class,"callback"])->name("payment.return");
 Route::any("payment/{slug}/cancel",[CartController::class,"cancel"])->name("payment.cancel");
 Route::post("cart/check/address",function(){
     $addresses=DeliveryAddress::deliveryAddresses();
+    
     if($addresses){
 
         return response()->json(['has_address' => true]);
@@ -194,6 +197,7 @@ Route::post("cart/check/address",function(){
         return response()->json(['has_address' => false]);
     }
 
+ });
 });
 
 // paypal
@@ -210,17 +214,21 @@ Route::post("add-rating",function(Request $request){
  
 Route::get("user/register-login",[UserController::class,"register_login"])->name("login");
 Route::post("user/store",[UserController::class,"store"]);
-Route::post("user/login",[UserController::class,"userLogin"]);
+Route::post("user/login",[UserController::class,"userLogin"])->name("user.login");
 Route::get("user/confirm/{code}",[UserController::class,"confirmAccount"]);
 
 // social login 
 Route::get("auth/{driver}/redirect",[UserController::class,"redirect"]);
 Route::get("auth/{driver}/callback",[UserController::class,"callback"]);
 
+
+//////////////////
 Route::middleware("auth")->group(function () {
 Route::get("user/account/{id}",[UserController::class,"userAccount"])->name("userAccount");
 Route::get("user/account-edit",[UserController::class,"userAccountEdit"])->name("userAccountEdit");
 Route::post("user/account-update",[UserController::class,"userAccountUpdate"]);
+Route::get("user/delivery-address",[UserController::class,"DeliveryAddressForm"]);
+Route::post("user/delivery-address/store",[UserController::class,"DeliveryAddressStore"]);
 
 });
 
@@ -228,9 +236,19 @@ Route::get("user/forget-password",[UserController::class,"forgetPassword"]);
 Route::post("user/new-password",[UserController::class,"newPassword"]);
 Route::post("user/put-new-password",[UserController::class,"putNewPassword"]);
 Route::get("user/new-password-form/{code}",[UserController::class,"NewPasswordForm"]);
+ 
 
 // currency converter
 Route::get("currencyConverter/{currency_to}",[currencyController::class,"currencyConverter"]);
+
+//// rating
+Route::middleware("auth")->group(function(){
+
+Route::post("product/rating/store",[RatingController::class,"store"]);
+Route::get("product/rating/read/{id}",[RatingController::class,"getRatings"]);
+
+});
+ 
 
 
 });

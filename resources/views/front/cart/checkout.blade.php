@@ -25,7 +25,7 @@
 	<div class="container">
 <!--   //////////////////// ********************************************************   -->
 					 <!-- Button to trigger modal -->
-					 <button type="button" id="add-new-address" class="btn btn-primary" data-toggle="modal" data-target="#addressModal">
+ <button type="button" id="add-new-address" class="btn btn-primary" data-toggle="modal" data-target="#addressModal">
     Add New Address
 </button>
 
@@ -42,7 +42,7 @@
                 </button>
             </div>
             <div class="modal-body">
-			<form id="add-address-form"   method="post">
+			<form action="{{url('user/delivery-address/store')}}" id="add-address-form"   method="post">
 			@csrf
                     <div class="form-group">
                         <label for="addressType">عنوان فردي (المنزل - السكن)</label>
@@ -53,43 +53,48 @@
                     </div>
                     <div class="form-group">
                         <label for="firstName">الاسم الأول</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="ahmed obaid">
+                        <input type="text" name="name" class="form-control" id="firstName" placeholder="your name">
+                    </div>
+					<div class="form-group">
+                        <label for="lastName"> phone  </label>
+                        <input type="phone" name="mobile" class="form-control" id="lastName" placeholder="phone">
                     </div>
                     <div class="form-group">
-                        <label for="lastName">اسم العائلة</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="obaid">
+                        <label for="lastName"> email  </label>
+                        <input type="email" name="email" class="form-control" id="lastName" placeholder="email">
                     </div>
                     <div class="form-group">
                         <label for="country">البلد</label>
-                        <select class="form-control" id="country">
-                            <option>تركيا</option>
-                            <option>سوريا</option>
+                        <select class="form-control" name="country_code" id="country">
+						   <?php $countries=include(base_path("/data/country.php"));  ?>
+						     @foreach($countries as $country_code=>$country_value)
+                            <option value="{{$country_code}}">{{$country_value}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="province">الرجا اختيار محافظة</label>
-                        <select class="form-control" id="province">
-                            <option>اسطنبول</option>
-                            <option>أنقرة</option>
-                        </select>
+						<input type="text" name="city" class="form-control" id="city" placeholder="محافظة">
                     </div>
-                    <div class="form-group">
-                        <label for="city">حي</label>
-                        <input type="text" class="form-control" id="city" placeholder="حي">
+					<div class="form-group">
+                        <label for="province">state </label>
+						<input type="text" name="state" class="form-control" id="city" placeholder="محافظة">
                     </div>
+					<div class="form-group">
+                        <label for="province">pincode </label>
+						<input type="text" name="pincode" class="form-control" id="city" placeholder="محافظة">
+                    </div>
+                     
                     <div class="form-group">
                         <label for="address">عنوان</label>
-                        <textarea class="form-control" id="address" rows="3" placeholder="أدخل معلومات الحي والشارع والشارع بالكامل"></textarea>
+                        <textarea class="form-control" name="address" id="address" rows="3" placeholder="أدخل معلومات الحي والشارع والشارع بالكامل"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="notes">ملاحظات</label>
-                        <input type="text" class="form-control" id="notes" placeholder="من أجل الإبلاغ عن التسليمات">
-                    </div>
+                    
               
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
-                <button id="add-address-submit" type="submit" class="btn btn-primary">حفظ</button>
+                <button id="add-address-submit" type="" class="btn btn-primary">حفظ</button>
            </form>
             </div>
         </div>
@@ -140,10 +145,11 @@
 						    <div id="collapseTwo" class="panel-collapse collapse">
 						      <div class="panel-body">
 					
-								
+							  <input id="address-new" name="address-id-new" value=" " type="hidden">
 						     @foreach($addresses as $address)
 							 <div class="control-group">   
-							     <input id="address"name="address-id" value="{{$address['id']}}" type="radio">
+							     
+							     <input id="address" name="address-id" value="{{$address['id']}}" type="radio">
 								 <lable for="address">   {{$address['address']}} , {{$address['country']}} , {{$address['state']}} , {{$address['city']}}</lable>
 							 </div>
 							   						  				                               
@@ -153,13 +159,13 @@
 					  	</div>
 
                        @endif
-						<!-- checkout-step-03  -->
+						 
 					   
-					  	<!-- checkout-step-03  -->
+					   
 
-						<!-- checkout-step-04  -->
+						 
 					
-						<!-- checkout-step-04  -->
+						 
 
 						<!-- checkout-step-05  -->
 					  	<div class="panel panel-default checkout-step-05">

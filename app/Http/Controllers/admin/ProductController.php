@@ -235,7 +235,7 @@ $product->save();
     //////////////////////// add atributes/////////////////////////
 
     public function addEditAttributes(Request $request,$id){
-      $product=Product::where("id",$id)->select("id","product_name","product_code","product_price","product_color")->with("attributes")->first()->toArray();
+      $product=Product::where("products.id",$id)->select("id","product_name","product_code","product_price","product_color")->with("attributes")->first()->toArray();
       //dd($product);
        if($request->isMethod("post")){
         
@@ -436,34 +436,52 @@ public function listing(Request $request){
                   <li class='active'> <a href='".url($categoryDetails["url"])."' >".$categoryDetails["category_name"]." </a></li>" ;        
   }
  
+  DB::enableQueryLog();
+$categoryproducts=Product::with([
   
-$categoryproducts=Product::with(["brand:id,name","attributes","images"=>function($builder){
-$builder->select("id","product_id","image","color","is_orginal_image")->where("is_orginal_image","yes");
-}])->whereIn("category_id",$categoryDetails['cat_ids'])->where("status",1);
+  "brand:id,name",
+  "attributes",
+  "images"=>function($builder){
+            $builder->select("id","product_id","image","color","is_orginal_image")
+           ->where("is_orginal_image","yes");
 
+}
 
+])
+//  ->select("products.*")
+ //->selectSub(
+     // DB::table("ratings")
+      //->selectRaw("AVG(rating)")
+     // ->whereColumn("ratings.product_id", "products.id")// ✅ connect tables
+    // ,"avg_rating"
+ // )
+->whereIn("category_id",$categoryDetails['cat_ids'])
+->where("status",1) ;
+ 
 
-
-//dd("data['filter']");
+//dd(DB::getQueryLog());
+//dd($categoryproducts->toArray());
+ 
  // ajax_filter_sort
 if($request->ajax()){
-  
+ //dd($request->all());
   $data=$request->all();
-  
+  //dd( "listhhhhhhh" );
 // checking for filters
 if(isset($data['filter'] ) && !empty($data['filter'] )){
   $filters_array=[];
- 
+ // dd( "listhhhhhhhssss" );
  foreach($data["filter"] as $key=>$value){
- 
+  //dd("list888888");
   
     $filter= explode("-",$value);
     $filters_array[]=$filter;    
  }/// end foreach
- 
+ //dd( $filter);
  $categoryproducts->where(function($query) use($filters_array){
          foreach($filters_array as $filt){
-
+          
+         // $query->orWhere($filt[0],$filt[1]);
           $query->orWhere($filt[0],$filt[1]);
 
          }
@@ -477,7 +495,7 @@ if(isset($data["sizes"]) && !empty($data["sizes"])){
  
  $productId=ProductAttribute::select("product_id")->whereIn("size",$data["sizes"])->get()->pluck("product_id")->toArray();
   
- $categoryproducts->whereIn("id",$productId);
+ $categoryproducts->whereIn("products.id",$productId);
 
 }
 // end chek size 
@@ -487,7 +505,7 @@ if(isset($data["colors"]) && !empty($data["colors"])){
 
   $productIds=DB::table("product_attribute_color")->select("product_id")->where("color",$data["colors"])->get()->pluck("product_id")->toArray();
 
-  $categoryproducts->whereIn("id",$productIds);
+  $categoryproducts->whereIn("products.id",$productIds);
  
  }
  // end check colors 
@@ -496,7 +514,7 @@ if(isset($data["colors"]) && !empty($data["colors"])){
 if(isset($data["brand"]) && !empty($data["brand"])){
 
   $productIds=Product::select("brand_id")->whereIn("brand_id",$data["brand"])->get()->pluck("id")->toArray();
-  $categoryproducts->whereIn("id",$productIds);
+  $categoryproducts->whereIn("products.id",$productIds);
  }
  // end chek brand 
 
@@ -511,7 +529,7 @@ if(isset($data["brand"]) && !empty($data["brand"])){
 
  $productId=call_user_func_array("array_merge",$productId);
   ;
-   $categoryproducts->whereIn("id",$productId);
+   $categoryproducts->whereIn("products.id",$productId);
    
   
   }
@@ -587,15 +605,16 @@ public function product_details(Request $request,$id ) {
     $price=$data['price'];
   $product=Product::with(["section","category","brand","images","vendor","attributes"=>function($query){
          $query->where("stock",">",0)->where("status",1);
-  }])->find($id)->toArray();
-
-  //dd($product);
+  }])->find($id) ; //->toArray();
+ 
+  $averageRating=$product->averageRating();
+  $product=$product->toArray();
    
 $vendor=Admin::with("vendor_personal","vendor_business","vendor_bank")->where("id",$product["vendor_id"])->first()->toArray();
   $sections=Section::sections();
   $categoryDetails=Category::get_details($product['category']['url']);
   
-  return view("front.products.product_details",compact("vendor","product","sections","categoryDetails","size","color","stock","price"));
+  return view("front.products.product_details",compact("vendor","product","sections","categoryDetails","size","color","stock","price","averageRating"));
 }
 
 // get price attribute by ajax

@@ -54,6 +54,20 @@ public function images(){
 }
 
 
+public function ratings(){
+
+  return $this->hasMany(rating::class);
+}
+
+public function averageRating(){
+
+  return $this->ratings()->avg("rating");
+}
+
+
+
+
+
  
 
 

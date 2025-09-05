@@ -1,6 +1,7 @@
 <?php
 namespace App\traits;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -31,6 +32,15 @@ public static function bootI18ns(){
     ]);
     foreach($model->columnTranslate  as $column){
       $builder->selectRaw("ifnull({$tableTranslate}.{$column} ,{$table}.{$column}) as {$column}");
+
+      // get product-rating
+      if($model instanceOf \App\Models\Product){
+        $builder->selectSub(  
+          DB::table("ratings")
+        ->selectRaw("AVG(rating)")
+        ->whereColumn("ratings.product_id","products.id"),"avg_rating"
+        );
+      }
       
        // $builder->ordedrBy("products.id","desc");
     }

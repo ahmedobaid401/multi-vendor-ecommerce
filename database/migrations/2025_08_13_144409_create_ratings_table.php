@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('role_abilities', function (Blueprint $table) {
+        Schema::create('ratings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("role_id")->constrained("roles")->cascadeOnDelete();
-            $table->string("ability");
-            $table->enum("type",["allow","deny"]);
-            $table->unique(["role_id","ability"]);
+            $table->foreignId("product_id")->constrained()->onDelete("cascade");
+            $table->foreignId("user_id")->constrained()->onDelete("cascade");
+            $table->unsignedTinyInteger("rating")->comment("1 to 5 stars");
+            $table->text("comment")->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('role_abilities');
+        Schema::dropIfExists('ratings');
     }
 };

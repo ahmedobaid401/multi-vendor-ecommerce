@@ -51,7 +51,7 @@ class User extends Authenticatable
     }
 
     public function getProviderTokenAttribute($value){
-        return Crypt::decrypt($value);
+        return "" ;//Crypt::decrypt($value);
     }
 
 
@@ -61,6 +61,17 @@ class User extends Authenticatable
         return $this->hasOne(UserAddress::class,"user_id","id");
     }
 
+    public function delivery_addresses() {
+        
+        return $this->hasMany(DeliveryAddress::class,"user_id","id");
+    }
+
+    public function ratings() {
+        
+        return $this->hasMany(rating::class);
+    }
+
+   
 
     public function routeNotificationForVonage(Notification $notification): string
     {

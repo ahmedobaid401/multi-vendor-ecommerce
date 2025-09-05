@@ -9,6 +9,7 @@ use App\PaymentGateways\PaymentGateway;
 use Illuminate\Support\Facades\Redirect;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\Resources\Json\JsonResource;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
@@ -30,24 +31,28 @@ class Cod implements PaymentGateway
         try {
             // create payment record
              $payment=Payment::forceCreate([
-                "payment_method_id"=>$this->paymentMethod->id,
+                "payment_methods_id"=>$this->paymentMethod->id,
                 "paymentable_id"=>$order->id,
                 "paymentable_type"=>get_class($order),
                 "payer_type"=>get_class(Auth::user()),
                 "payer_id"=>$order->user_id,
                 "amount"=>$order->total,
-                "currency_code"=>$order->currency_code,
+                "currency_code"=> "USD",
                 "type"=> "payment",
+                "payment_response"=>"cod" ,
                 "status"=> "pending",
                  
              ]);
              
              // return to any page you want
-             return view("welcome");
+             return  new JsonResource([
+              "status"=>"succees",
+              "redirect"=>route("dashboard"),
+             ]) ;
              
         } catch (\Exception $ex) {
-            echo $ex->statusCode;
-            print_r($ex->getMessage());
+           // echo $ex->statusCode;
+            throw $ex;
         }
     }
 

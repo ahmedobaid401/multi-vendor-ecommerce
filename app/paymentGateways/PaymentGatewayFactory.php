@@ -1,6 +1,9 @@
 <?php
   namespace App\PaymentGateways;
   use Illuminate\Support\Str;
+
+
+  
   class PaymentGatewayFactory
   {
 
@@ -8,9 +11,10 @@
     {
 
         $class="App\paymentgateways\\".Str::studly($name);
-        
+
         try{
             return new $class;
+           // dd($class);
         }catch(\Exception $e){
 
             throw new \Exception("payment gateway [{$name}] not found");

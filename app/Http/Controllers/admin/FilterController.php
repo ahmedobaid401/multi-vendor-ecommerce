@@ -14,13 +14,13 @@ class FilterController extends Controller
     ////////////////// index ProductsFilters///////////////////
     public function index(){
 
-        $ProductsFilters=ProductsFilter::all()->toArray();
-       // dd($productsFilters);
-        return view("admin/products_filter/index",compact("ProductsFilters"));
+            $ProductsFilters=ProductsFilter::all()->toArray();
+               // dd($productsFilters);
+               return view("admin/products_filter/index",compact("ProductsFilters"));
         
             }
             
-            public function filterValues(){
+      public function filterValues(){
 
                 $filtersValues=ProductsFiltersValue::all()->toArray();
                // dd($productsFilters);

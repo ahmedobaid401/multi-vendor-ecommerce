@@ -166,11 +166,11 @@ public function updateTotal(Request $request){
 public function checkout(Request $request){
    
     $addresses=DeliveryAddress::deliveryAddresses();
-  
+ 
    if($request->isMethod("post")){
       
       $data=$request->all();
-       
+      //dd($data['address-id']);
       $countItems=Cart::countItems();
 
        // check if cart is empty
@@ -180,8 +180,14 @@ public function checkout(Request $request){
       }
 
       //check address
-      if(empty($data['address-id'])){
-         return redirect()->back()->with("error_message","please select or add address");
+      if(!isset($data['address-id']) &!isset($data['address-id-new'])){
+          
+         return redirect()->back()->with("error_message","please select or add address");   
+      }else{
+        //adrress
+        $address_id = isset($data["address-id"]) ? $data["address-id"] : $data["address-id-new"];
+        $address=DeliveryAddress::where("id", $address_id)->first()->toArray();
+
       }
 
       //check payment method
@@ -193,11 +199,6 @@ public function checkout(Request $request){
          return redirect()->back()->with("error_message","please agree T&C");
       }
        
-       //adrress
-       $address=DeliveryAddress::where("id",$data['address-id'])->first()->toArray();
-
-     
-
        ///total 
        $cart=new Cart();
        $total= $cart->total();
@@ -225,7 +226,7 @@ public function checkout(Request $request){
        
       $order->save();
       //dd($order);
-      // create orderprodct
+      // create orderproduct
       $order_id=DB::getPdo()->lastInsertId();
       $cartItems=Cart::getCartItems();
       foreach($cartItems as $cartItem){
@@ -264,8 +265,9 @@ public function checkout(Request $request){
        $gateway=PaymentGatewayFactory::create($data["paymentMethod"]);    
        $gateway->create($order);
        
-
-
+       //$gateway="App\paymentgateways\\".Str::studly($name);
+       //$gateway= new $class;
+       //$gateway->create($order);
       //send order email
       $email=$address["email"];
       $name = $address["name"];
@@ -284,7 +286,7 @@ public function checkout(Request $request){
 
       
      
-   return view("front.cart.checkout",compact("addresses"));
+    return view("front.cart.checkout",compact("addresses"));
 
    }else{
 

@@ -392,11 +392,25 @@
 							<div class="rating-reviews m-t-20">
 								<div class="row">
 									<div class="col-sm-3">
-										<div class="rating rateit-small"></div>
+										<div >
+                                     @if($averageRating)
+									    @for($i=1; $i<=5 ; $i++)
+										      @if($i <=floor($averageRating))
+										        ⭐️
+										      @elseif($i - $averageRating  < 1)
+										        ⭐️ (half star emoji or SVG)
+										      @else
+										        ☆
+										      @endif
+										@endfor
+									 @endif
+
+										              					
+									</div>
 									</div>
 									<div class="col-sm-8">
 										<div class="reviews">
-											<a href="#" class="lnk">(13 Reviews)</a>
+											<a href="#" class="lnk">({{ \App\Models\Product::find($product["id"])->ratings()->count()}} Reviews)</a>
 										</div>
 									</div>
 								</div><!-- /.row -->		
@@ -589,18 +603,20 @@
 										
 										<div class="product-add-review">
 											<h4 class="title">Write your own review</h4>
-											<form method="post" action="{{url('add-rating')}}" class="cnt-form">
+											<form method="post" action="{{url('product/rating/store')}}" class="cnt-form">
 												@csrf
+												<input type="hidden"   name="product_id" value="{{$product['id']}}" />
+
 											<div class="rate">
-													<input type="radio" id="star5" name="rate" value="5" />
+													<input type="radio" id="star5" name="rating" value="5" />
 													<label for="star5" title="text">5 stars</label>
-													<input type="radio" id="star4" name="rate" value="4" />
+													<input type="radio" id="star4" name="rating" value="4" />
 													<label for="star4" title="text">4 stars</label>
-													<input type="radio" id="star3" name="rate" value="3" />
+													<input type="radio" id="star3" name="rating" value="3" />
 													<label for="star3" title="text">3 stars</label>
-													<input type="radio" id="star2" name="rate" value="2" />
+													<input type="radio" id="star2" name="rating" value="2" />
 													<label for="star2" title="text">2 stars</label>
-													<input type="radio" id="star1" name="rate" value="1" />
+													<input type="radio" id="star1" name="rating" value="1" />
 													<label for="star1" title="text">1 star</label>
 											    </div><br><br> <br><br>
 											
@@ -614,7 +630,7 @@
 															<div class="col-md-6">
 																<div class="form-group">
 																	<label for="exampleInputReview">Review <span class="astk">*</span></label>
-																	<textarea class="form-control txt txt-review" id="exampleInputReview" rows="4" placeholder=""></textarea>
+																	<textarea class="form-control txt txt-review" name="comment" id="exampleInputReview" rows="4" placeholder=""></textarea>
 																</div><!-- /.form-group -->
 															</div>
 														</div><!-- /.row -->
